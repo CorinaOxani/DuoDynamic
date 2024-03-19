@@ -1,15 +1,11 @@
 # DuoDynamic
-Aplicatia noasta "Goal Getter" vine in ajutorul persoanelor care vor sa duca o viata organizata si sanatoasa. Un mediu sigur si usor de
-folosit care sa iti faca ziua mai usoara.
+TimeToGive - Aplicația de Voluntariat
+Bine ai venit în repo-ul aplicației TimeToGive, platforma noastră mobilă care conectează voluntarii cu oportunități de a contribui la evenimente și proiecte de voluntariat. Scopul nostru este de a face procesul de voluntariat cât mai accesibil și simplu posibil, conectând organizațiile care au nevoie de ajutor cu persoanele dornice să contribuie.
 
-Ce ne propunem:
--un loc in care sa iti poti trece toate evenimentele dintr-o zi sau saptamana astfel incat sa nu uiti nimic din ce ai de facut
--posibilitatea de a bifa activitatile pe care ai reusit sa le faci,de a sterge sau de a edita o activitate (ex: schimbi ziua, ora etc)
--pe langa activitati este important sa ducem o viata sanatoasa din punct de vedere alimentar, aplicatia ofera suport pentru un plan alimentar
-echilibrat in functie de preferintele fiecaruia si in functie de obiceiurile persoanei respective
+Despre TimeToGive
+TimeToGive este o aplicație mobilă dezvoltată în React Native, concepută pentru a facilita găsirea, aplicarea și participarea la evenimente de voluntariat. Platforma permite utilizatorilor să creeze profiluri ca voluntari sau organizații, să posteze sau să aplice la evenimente de voluntariat, și să gestioneze participarea la diverse activități de voluntariat.
 
-Tools:
--React Native
--Node js
--MongoDB
-
+Tehnologii Utilizate
+Frontend: React Native
+Backend: Node.js, Express
+Bază de Date: MongoDB
