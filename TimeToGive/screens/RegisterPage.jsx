@@ -7,21 +7,31 @@ import { containerStyles} from '../styles/container';
 import {login_page_styles} from '../styles/login_page';
 import { footerStyles} from '../styles/FooterText';
 import { linkStyles} from '../styles/link';
+import axios from 'axios';
 
 const RegisterScreen = (props) => {
   console.log(props);
   const [name, setName] = useState('');
+  const [nameVerify, setNameVerify] = useState(false);
   const [email, setEmail] = useState('');
+  const [emailVerify, setEmailVerify] = useState(false);
   const [mobile, setMobile] = useState('');
+  const [mobileVerify, setMobileVerify] = useState(false);
   const [password, setPassword] = useState('');
+  const [passwordVerify, setPasswordVerify] = useState(false);
 
-  const handleRegister = () => {
-    // Logica de înregistrare
-    console.log('Name:', name);
-    console.log('Email:', email);
-    console.log('Mobile:', mobile);
-    console.log('Password:', password);
-  };
+  function handleSubmit(){
+    const userData={
+      name: name,
+      email,
+      mobile,
+      password
+    };
+    axios
+    .post("http://192.168.1.107:5001/register", userData)
+    .then((res)=>console.log(res.data))
+    .catch(e => console.log(e));
+  }
 
   return (
     <View style={containerStyles.container}>
@@ -58,7 +68,7 @@ const RegisterScreen = (props) => {
         secureTextEntry
       />
       <View>
-      <TouchableOpacity style={styles.button} onPress={handleRegister}>
+      <TouchableOpacity style={styles.button} onPress={() =>handleSubmit()}>
         <Text style={styles.buttonText}>REGISTER</Text>
       </TouchableOpacity>
       </View>
