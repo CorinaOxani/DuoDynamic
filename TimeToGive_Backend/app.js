@@ -1,49 +1,53 @@
-const express = require("express");
+require('dotenv').config();
+const cors = require('cors');
+const express = require('express');
 const app = express();
-const mongoose = require("mongoose");
-app.use(express.json());
+const mongoose = require('mongoose');
 
-const mongoUrl = 
-"mongodb+srv://oxanicorina0:Negru123@cluster0.ofrsvwd.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+app.use(express.json());
+app.use(cors());
+
+// Utilizați variabila de mediu pentru URI-ul MongoDB
+const mongoUrl = process.env.DB_URI;
 
 mongoose
     .connect(mongoUrl)
-    .then(() => {
-        console.log("Database Connected" );
-    })
-    .catch((e) => {
-        console.log(e);
-    });
-require('./UserDetails')
+    .then(() => console.log("Database Connected"))
+    .catch((e) => console.error("Failed to connect to database:", e));
+
+require('./UserDetails');
 const User = mongoose.model("UserInfo");
 
-app.get("/" ,(req, res) =>{
-    res.send({status:"Started"});
+app.get("/", (req, res) => {
+    res.send({status: "Started"});
 });
 
-app.post('/register',async(req, res)=>{
-    const {name, email, mobile, password} = req.body;
+app.post('/register', async (req, res) => {
+    const { name, email, mobile, password } = req.body;
 
-    const oldUser= await User.findOne({email: email}); //incearca sa caute un utilizator cu acelasi email
-    if(oldUser){
-        return res.send({data: "User already exist! "});
-    }
+    try {
+        const oldUser = await User.findOne({ email });
+        if (oldUser) {
+            // 409 Conflict
+            return res.status(409).send({ message: "User already exists!" });
+        }
 
-    try{
-        await User.create({
-            name: name,
-            email: email,
+        const user = await User.create({
+            name,
+            email,
             mobile,
             password,
-
         });
-        res.send({status: "ok", data: "User Created"});
-    } catch(error){
-        res.send({status: "error", data: "error"});
+
+        // 201 Created
+        res.status(201).send({ message: "User created successfully", user });
+    } catch (error) {
+        // 500 Internal Server Error
+        res.status(500).send({ message: "Error creating the user", error: error.message });
     }
 });
 
-app.listen(5001,()=>{
-    console.log("Node js server started.");
-
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+    console.log(`Server is running on port ${port}.`);
 });
