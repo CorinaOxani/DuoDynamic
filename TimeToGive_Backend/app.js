@@ -47,6 +47,27 @@ app.post('/register', async (req, res) => {
     }
 });
 
+app.post("/login-user", async (req, res) => {
+    const { email, password } = req.body;
+
+    try {
+        const oldUser = await User.findOne({ email: email });
+
+        if (!oldUser) {
+            return res.status(404).send({ data: "User doesn't exist" });
+        }
+
+        if (oldUser.password !== password) {
+            return res.status(401).send({ data: "Invalid credentials" });
+        }
+        res.send({ data: "Login successful" });
+
+    } catch (error) {
+        res.status(500).send({ data: "An error occurred during the login process" });
+    }
+});
+
+
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
     console.log(`Server is running on port ${port}.`);

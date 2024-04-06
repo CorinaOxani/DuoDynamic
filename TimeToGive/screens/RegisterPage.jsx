@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Image, TextInput, TouchableOpacity, Text } from 'react-native';
+import { View, Image, TextInput, TouchableOpacity, Text, ActivityIndicator } from 'react-native';
 import { styles } from '../styles/button';
 import { logoStyles } from '../styles/logo';
 import { containerStyles } from '../styles/container';
@@ -12,56 +12,61 @@ const RegisterScreen = (props) => {
   const [mobile, setMobile] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false); // Declaration of isLoading state
 
-
-  
   async function handleSubmit() {
-    // Verifică dacă toate câmpurile sunt completate
     if (!name || !email || !mobile || !password) {
-      setError('All fields are required.'); // Setează mesajul de eroare
-      return; // Opriți executarea ulterioară a funcției
+      setError('All fields are required.');
+      return;
     }
-  
-    // Verifica dacă numele începe cu o literă mare
     if (!/^[A-Z]/.test(name)) {
       setError('Name must start with a capital letter.');
       return;
     }
-  
-    // Verifică formatul email-ului
     if (!/\S+@\S+\.\S+/.test(email)) {
       setError('Email must contain @ and a domain.');
       return;
     }
-  
-  
-    setError(''); // Resetează mesajul de eroare dacă toate câmpurile sunt completate
-  
+
+    setError('');
+    setIsLoading(true); // Start loading process
+
     const userData = {
-      name: name,
-      email: email,
-      mobile: mobile,
-      password: password,
+      name,
+      email,
+      mobile,
+      password,
     };
-  
+
     try {
       const response = await fetch('http://10.0.2.2:5000/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(userData)
+        body: JSON.stringify(userData),
       });
-      
-      const data = await response.json();
-      console.log(data);
-      // Aici puteți adăuga logica după succes, de exemplu, navigarea către o altă pagină
+
+      if (response.ok) {
+        props.navigation.navigate("Login");
+      } else {
+        setError('Registration failed. Please try again.');
+      }
     } catch (error) {
       console.error('Error:', error);
+      setError('An error occurred. Please try again.');
+    } finally {
+      setIsLoading(false); // End loading process
     }
   }
-  
-  
+
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
   
   return (
     <View style={containerStyles.container}>
@@ -102,7 +107,6 @@ const RegisterScreen = (props) => {
           <Text style={styles.buttonText}>REGISTER</Text>
         </TouchableOpacity>
       </View>
-      {/* componenta de eroare */}
       {error ? <Text style={{color: 'red', textAlign: 'center', marginTop: 10}}>{error}</Text> : null}
       <View style={linkStyles.signUpContainer}>
         <Text style={linkStyles.signUpText}>
