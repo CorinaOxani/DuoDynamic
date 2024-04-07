@@ -42,7 +42,7 @@ function LoginScreen(props){
 
       if (response.ok) {
         console.log('Login successful:', json);
-        props.navigation.navigate("Main"); //trebuie modificat aici cu screen ul home pentru un user logat
+        props.navigation.navigate("Proiecte"); //trebuie modificat aici cu screen ul home pentru un user logat
       } else {
         setError('Login failed. Please try again.');
       }
