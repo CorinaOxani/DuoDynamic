@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, Text, StyleSheet } from 'react-native';
+import { View, TextInput, TouchableOpacity, Button, Text, StyleSheet, ActivityIndicator, ScrollView } from 'react-native';
 import { launchImageLibrary } from 'react-native-image-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { styles } from '../styles/button';
@@ -9,17 +9,17 @@ import { containerStyles} from '../styles/container';
 import {login_page_styles} from '../styles/login_page';
 import { footerStyles} from '../styles/FooterText';
 import { linkStyles} from '../styles/link';
+import { proiecteStyles} from '../styles/proiecte';
 
- function AdaugaProiectScreen() {
-   const [date, setDate] = useState(new Date());
-   const [show, setShow] = useState(false);
+ function AdaugaProiectScreen(props) {
+  const [startDate, setStartDate] = useState(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
   const [name, setProjectName] = useState('');
   const [projectImage, setProjectImage] = useState(null);
   const [description, setDescription] = useState('');
   const [organizer, setOrganizer] = useState('');
   const [email, setEmail] = useState('');
   const [mobile, setMobile] = useState('');
-  const [startDate, setStartDate] = useState('');
   const [organization, setOrganization] = useState('');
   const [country, setCountry] = useState('');
   const [region, setRegion] = useState('');
@@ -45,10 +45,19 @@ import { linkStyles} from '../styles/link';
       setError('All fields are required.');
       return;
     }
-    if (!/^[A-Z]/.test(name)) {
+    if (!/^[A-Z]/.test(name) || !/^[A-Z]/.test(organizer) || !/^[A-Z]/.test(organization)) {
       setError('Name must start with a capital letter.');
       return;
     }
+
+        if (!/^[A-Z]/.test(Country) ) {
+          setError('Country must start with a capital letter.');
+          return;
+        }
+         if (!/^[A-Z]/.test(Region) ) {
+           setError('Region must start with a capital letter.');
+           return;
+         }
     if (!/\S+@\S+\.\S+/.test(email)) {
       setError('Email must contain @ and a domain.');
       return;
@@ -98,15 +107,20 @@ import { linkStyles} from '../styles/link';
       </View>
     );
   }
-  const onChange = (event, selectedDate) => {
-    const currentDate = selectedDate || date;
-    setShow(Platform.OS === 'ios');
-    setDate(currentDate);
+
+    const onDateChange = (event, selectedDate) => {
+      const currentDate = selectedDate || startDate;
+      setShowDatePicker(Platform.OS === 'ios'); // pe iOS, ai putea să vrei să afișezi picker-ul constant
+      setStartDate(currentDate);
+    };
+  // Funcție pentru a formata data într-un mod lizibil pentru afișare
+  const formatDate = (date) => {
+    return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
   };
 
   return (
     <View style={containerStyles.container}>
-
+<ScrollView style={{marginTop: 10, marginBottom:10}}>
     <TextInput
             style={login_page_styles.input}
             onChangeText={setProjectName}
@@ -170,27 +184,42 @@ import { linkStyles} from '../styles/link';
                 placeholder="Country"
 
               />
-        <View>
-              <View>
-                <Button onPress={() => setShow(true)} title="Selectează data" />
-              </View>
-              {show && (
-                <DateTimePicker
-                  testID="dateTimePicker"
-                  value={date}
-                  mode="date" // setează modul pe 'date' pentru a selecta doar data
-                  display="default"
-                  onChange={onChange}
-                />
-              )}
-            </View>
 
-           <View>
+       <TouchableOpacity
+
+         style={styles.button}
+         onPress={() => setShowDatePicker(true)}>
+         <Text style={styles.buttonText}>PICK DATE</Text>
+       </TouchableOpacity>
+
+      {showDatePicker && (
+        <DateTimePicker
+          value={startDate}
+          mode="date"
+          display="default"
+          onChange={onDateChange}
+        />
+      )}
+
+      {/* Afișează data selectată sub buton */}
+      <Text style={styles.buttonText}>
+        Date: {formatDate(startDate)}
+      </Text>
+
+</ScrollView >
+
+           <View style={{ justifyContent: 'space-around', flexDirection: 'row'}}>
+           <View style={{right:'60%'}}>
              <TouchableOpacity style={styles.button} onPress={handleSubmit}>
                <Text style={styles.buttonText}>SUBMIT</Text>
              </TouchableOpacity>
            </View>
-           {error ? <Text style={{color: 'red', textAlign: 'center', marginTop: 10}}>{error}</Text> : null}
+           <View style={{left:'60%'}}>
+             <TouchableOpacity style={styles.button} onPress={() => props.navigation.navigate("Proiecte")}>
+               <Text style={styles.buttonText}>BACK</Text>
+             </TouchableOpacity>
+           </View>
+</View>
     </View>
   );
 };
