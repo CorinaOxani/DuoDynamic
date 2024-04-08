@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TextInput, TouchableOpacity, Button, Text, StyleSheet, ActivityIndicator, ScrollView } from 'react-native';
+import { View, Image, TextInput, TouchableOpacity, Button, Text, StyleSheet, ActivityIndicator, ScrollView } from 'react-native';
 import { launchImageLibrary } from 'react-native-image-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { styles } from '../styles/button';
@@ -10,22 +10,141 @@ import {login_page_styles} from '../styles/login_page';
 import { footerStyles} from '../styles/FooterText';
 import { linkStyles} from '../styles/link';
 import { proiecteStyles} from '../styles/proiecte';
+import Feather from 'react-native-vector-icons/Feather';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import Fontisto from 'react-native-vector-icons/Fontisto';
+import Error from 'react-native-vector-icons/MaterialIcons';
+import Icon from 'react-native-vector-icons/Entypo';
+import axios from 'axios';
 
  function AdaugaProiectScreen(props) {
   const [startDate, setStartDate] = useState(new Date());
+   const [dateVerify, setDateVerify]=useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [name, setProjectName] = useState('');
-  const [projectImage, setProjectImage] = useState(null);
-  const [description, setDescription] = useState('');
-  const [organizer, setOrganizer] = useState('');
-  const [email, setEmail] = useState('');
-  const [mobile, setMobile] = useState('');
-  const [organization, setOrganization] = useState('');
-  const [country, setCountry] = useState('');
-  const [region, setRegion] = useState('');
-  const [isLoading, setIsLoading] = useState(false); // Declaration of isLoading state
-  // Adaugă restul variabilelor de stare pentru celelalte câmpuri
 
+  const [name, setProjectName] = useState(''); //aici tin variabila
+  const [nameVerify, setNameVerify]=useState(false); //aici o verific daca corespunde sau nu formatului pe care il vreau
+
+  const [projectImage, setProjectImage] = useState(null);
+
+  const [description, setDescription] = useState('');
+   const [descriptionVerify, setDescriptionVerify]=useState(false);
+
+  const [organizer, setOrganizer] = useState('');
+  const [organizerVerify, setOrganizerVerify]=useState(false);
+
+  const [email, setEmail] = useState('');
+  const [emailVerify, setEmailVerify]=useState(false);
+
+  const [mobile, setMobile] = useState('');
+  const [mobileVerify, setMobileVerify]=useState(false);
+
+  const [organization, setOrganization] = useState('');
+  const [organizationVerify, setOrganizationVerify]=useState(false);
+
+  const [country, setCountry] = useState('');
+  const [countryVerify, setCountryVerify]=useState(false);
+
+  const [address, setAddress] = useState('');
+  const [addressVerify, setAddressVerify]=useState(false);
+
+  const [isLoading, setIsLoading] = useState(false); // Declaration of isLoading state
+
+function handleName(e)
+{
+ const nameP=e.nativeEvent.text;
+ setProjectName(nameP);
+ setNameVerify(false);
+ if(nameP.length>1)
+ {
+    setNameVerify(true);
+ }
+}
+
+function handleOrganization(e)
+{
+ const oP=e.nativeEvent.text;
+ setOrganization(oP);
+ setOrganizationVerify(false);
+ if(oP.length>1)
+ {
+    setOrganizationVerify(true);
+ }
+}
+
+function capitalizeFirstLetter(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+}
+
+function handleCountry(e)
+{
+ countryP=e.nativeEvent.text;
+ const capitalized = capitalizeFirstLetter(countryP);
+ countryP=capitalized;
+ setCountry(countryP);
+ setCountryVerify(false);
+ if(countryP=="Romania" || countryP=="Germany" || countryP=="Italy" || countryP=="Spain" || countryP=="Poland" || countryP=="Lower Countries" || countryP=="Belgium" || countryP=="Czech Republic" ||countryP=="Greece" || countryP=="Sweden" || countryP=="Portugal" || countryP=="Hungary" || countryP=="Austria" || countryP=="Bulgaria" || countryP=="Denmark" || countryP=="Finland" || countryP=="Slovakia" || countryP=="Ireland" || countryP=="Croatia" ||countryP=="Lithuania" || countryP=="Slovenia" || countryP=="Latvia" || countryP=="Estonia" || countryP=="Cyprus" || countryP=="Luxemburg" || countryP=="Malta" )
+ {
+    setCountryVerify(true);
+ }
+}
+
+function handleAddress(e)
+{
+ const addressP=e.nativeEvent.text;
+ setAddress(addressP);
+ setAddressVerify(false);
+ if(addressP.length>1)
+ {
+    setAddressVerify(true);
+ }
+}
+
+function handleDescription(e)
+{
+ const descriptionP=e.nativeEvent.text;
+ setDescription(descriptionP);
+ setDescriptionVerify(false);
+ if(descriptionP.length>15)
+ {
+    setDescriptionVerify(true);
+ }
+}
+
+function handleOrganizer(e)
+{
+ const orgP=e.nativeEvent.text;
+ setOrganizer(orgP);
+ setOrganizerVerify(false);
+ if(orgP.length>1)
+ {
+    setOrganizerVerify(true);
+ }
+}
+
+function handleEmail(e)
+{
+ const emailP=e.nativeEvent.text;
+ setEmail(emailP);
+ setEmailVerify(false);
+ if(/^[\w.%+-]+@[\w.-]+\.[a-zA-Z]{1,}$/.test(emailP))
+ {
+    setEmail(emailP);
+    setEmailVerify(true);
+ }
+}
+
+function handleMobile(e)
+{
+ const mobileP=e.nativeEvent.text;
+ setMobile(mobileP);
+ setMobileVerify(false);
+ if(/0{1}7{1}[0-9]{8}/.test(mobileP))
+ {
+    setMobile(mobileP);
+    setMobileVerify(true);
+ }
+}
   const pickImage = async () => {
     // Permite utilizatorului să selecteze o imagine din galeria telefonului
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -45,60 +164,7 @@ import { proiecteStyles} from '../styles/proiecte';
       setError('All fields are required.');
       return;
     }
-    if (!/^[A-Z]/.test(name) || !/^[A-Z]/.test(organizer) || !/^[A-Z]/.test(organization)) {
-      setError('Name must start with a capital letter.');
-      return;
-    }
-
-        if (!/^[A-Z]/.test(Country) ) {
-          setError('Country must start with a capital letter.');
-          return;
-        }
-         if (!/^[A-Z]/.test(Region) ) {
-           setError('Region must start with a capital letter.');
-           return;
-         }
-    if (!/\S+@\S+\.\S+/.test(email)) {
-      setError('Email must contain @ and a domain.');
-      return;
-    }
-
-    setError('');
-    setIsLoading(true); // Start loading process
-
-    const projectData = {
-      name,
-      description,
-      organizer,
-      email,
-      mobile,
-      organization,
-      country,
-      region,
-      startDate,
-    };
-
-    try {
-      const response = await fetch('http://10.0.2.2:5000/proiecte', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(projectData),
-      });
-
-      if (response.ok) {
-        props.navigation.navigate("Proiecte");
-      } else {
-        setError('Fail. Please try again.');
-      }
-    } catch (error) {
-      console.error('Error:', error);
-      setError('An error occurred. Please try again.');
-    } finally {
-      setIsLoading(false); // End loading process
-    }
-  }
+}
 
   if (isLoading) {
     return (
@@ -121,72 +187,102 @@ import { proiecteStyles} from '../styles/proiecte';
   return (
     <View style={containerStyles.container}>
 <ScrollView style={{marginTop: 10, marginBottom:10}}>
+<View style={proiecteStyles.action}>
     <TextInput
-            style={login_page_styles.input}
-            onChangeText={setProjectName}
-            value={name}
+            style={proiecteStyles.textInput}
+            onChange={e=>handleName(e)}
             placeholder="Project Name"
 
           />
+          { name.length<1? null : nameVerify ?( <Image source={require('../photo/yes.png')}style={{height:15, width:15, flexDirection: 'row', marginTop:6,}}/>) : (<Image source={require('../photo/circle.png')}style={{height:15, width:15, flexDirection: 'row', marginTop:6,}}/>)}
+ </View>
+ { name.length<1? null : nameVerify ? null :(
+ <Text style={{marginLeft:20, color:'red'}}> Name should be more than 1 character.</Text> )}
+
+<View style={proiecteStyles.action}>
     <TextInput
-            style={login_page_styles.input}
-            onChangeText={setDescription}
-            value={description}
+            style={proiecteStyles.textInput}
+            onChange={e=>handleDescription(e)}
             placeholder="Description"
 
           />
+          { description.length<1? null : descriptionVerify ?( <Image source={require('../photo/yes.png')}style={{height:15, width:15, flexDirection: 'row', marginTop:6,}}/>) : (<Image source={require('../photo/circle.png')}style={{height:15, width:15, flexDirection: 'row', marginTop:6,}}/>)}
+ </View>
+  { description.length<1? null : descriptionVerify ? null :(
+<Text style={{marginLeft:20, color:'red'}}> Put a proper description, at least 15 characters!.</Text> )}
+
+ <View style={proiecteStyles.action}>
         <TextInput
-                style={login_page_styles.input}
-                onChangeText={setOrganizer}
-                value={organizer}
+                style={proiecteStyles.textInput}
+               onChange={e=>handleOrganizer(e)}
                 placeholder="Organizer Name"
 
               />
+              { organizer.length<1? null : organizerVerify ?( <Image source={require('../photo/yes.png')}style={{height:15, width:15, flexDirection: 'row', marginTop:6,}}/>) : (<Image source={require('../photo/circle.png')}style={{height:15, width:15, flexDirection: 'row', marginTop:6,}}/>)}
+ </View>
+  { organizer.length<1? null : organizerVerify ? null :(
+<Text style={{marginLeft:20, color:'red'}}> Organizer's name should be more than 1 characters.</Text> )}
+
+ <View style={proiecteStyles.action}>
            <TextInput
-             style={login_page_styles.input}
-             onChangeText={setEmail}
-             value={email}
+            style={proiecteStyles.textInput}
+             onChange={e=>handleEmail(e)}
              placeholder="Email"
-             keyboardType="email-address"
            />
+           { email.length<1? null : emailVerify ?( <Image source={require('../photo/yes.png')}style={{height:15, width:15, flexDirection: 'row', marginTop:6,}}/>) : (<Image source={require('../photo/circle.png')}style={{height:15, width:15, flexDirection: 'row', marginTop:6,}}/>)}
+ </View>
+  { email.length<1? null : emailVerify ? null :(
+<Text style={{marginLeft:20, color:'red'}}> Email should be something like yourName@email.com</Text> )}
+
+ <View style={proiecteStyles.action}>
            <TextInput
-             style={login_page_styles.input}
-             onChangeText={setMobile}
-             value={mobile}
+             style={proiecteStyles.textInput}
+             onChange={e=>handleMobile(e)}
              placeholder="Mobile"
              keyboardType="numeric"
            />
+           { mobile.length<1? null : mobileVerify ?( <Image source={require('../photo/yes.png')}style={{height:15, width:15, flexDirection: 'row', marginTop:6,}}/>) : (<Image source={require('../photo/circle.png')}style={{height:15, width:15, flexDirection: 'row', marginTop:6,}}/>)}
+ </View>
+  { mobile.length<1? null : mobileVerify ? null :(
+<Text style={{marginLeft:20, color:'red'}}> Introduce a correct phone number!</Text> )}
+
+  <View style={proiecteStyles.action}>
         <TextInput
-                style={login_page_styles.input}
-                onChangeText={setOrganization}
-                value={organization}
+                style={proiecteStyles.textInput}
+                onChange={e=>handleOrganization(e)}
                 placeholder="Organization"
 
               />
+              { organization.length<1? null : organizationVerify ?( <Image source={require('../photo/yes.png')}style={{height:15, width:15, flexDirection: 'row', marginTop:6,}}/>) : (<Image source={require('../photo/circle.png')}style={{height:15, width:15, flexDirection: 'row', marginTop:6,}}/>)}
+  </View>
+   { organization.length<1? null : organizationVerify ? null :(
+<Text style={{marginLeft:20, color:'red'}}> Organization name should be more than 1 character.</Text> )}
+
+  <View style={proiecteStyles.action}>
         <TextInput
-                style={login_page_styles.input}
-                onChangeText={setCountry}
-                value={country}
+                style={proiecteStyles.textInput}
+                onChange={e=>handleCountry(e)}
                 placeholder="Country"
 
               />
+              { country.length<1? null : countryVerify ?( <Image source={require('../photo/yes.png')}style={{height:15, width:15, flexDirection: 'row', marginTop:6,}}/>) : (<Image source={require('../photo/circle.png')}style={{height:15, width:15, flexDirection: 'row', marginTop:6,}}/>)}
+  </View>
+   { country.length<1? null : countryVerify ? null :(
+<Text style={{marginLeft:20, color:'red'}}> Country should be part of UE.</Text> )}
+
+  <View style={proiecteStyles.action}>
         <TextInput
-                style={login_page_styles.input}
-                onChangeText={setRegion}
-                value={region}
-                placeholder="Region"
+               style={proiecteStyles.textInput}
+                onChange={e=>handleAddress(e)}
+                placeholder="Address"
 
               />
-        <TextInput
-                style={login_page_styles.input}
-                onChangeText={setCountry}
-                value={country}
-                placeholder="Country"
-
-              />
+              { address.length<1? null : addressVerify ?( <Image source={require('../photo/yes.png')}style={{height:15, width:15, flexDirection: 'row', marginTop:6,}}/>) : (<Image source={require('../photo/circle.png')}style={{height:15, width:15, flexDirection: 'row', marginTop:6,}}/>)}
+</View>
+ { address.length<1? null : addressVerify ? null :(
+<Text style={{marginLeft:20, color:'red'}}> Address should be more than 1 characters.</Text> )}
 
        <TouchableOpacity
-
          style={styles.button}
          onPress={() => setShowDatePicker(true)}>
          <Text style={styles.buttonText}>PICK DATE</Text>

@@ -61,4 +61,21 @@ export const proiecteStyles = StyleSheet.create({
          alignItems: 'center',
          justifyContent: 'center',
        },
+
+       action:{
+       flexDirection: 'row',
+       paddingTop:14,
+       paddingBottom:3,
+       marginTop:15,
+       paddingHorizontal:15,
+       borderWidth:1,
+       borderRadius:50,
+
+       },
+
+       textInput:{
+       flex: 1,
+       marginTop: -12,
+       width: '90%',
+       },
 });
