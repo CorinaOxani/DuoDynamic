@@ -1,6 +1,7 @@
 // Fișier: routes/userRoutes.js
 const express = require('express');
 const User = require('../models/User');
+const OrganizationUser = require('../models/OrganizationUser');
 const router = express.Router();
 
 router.get("/", (req, res) => {
@@ -22,16 +23,23 @@ router.post("/register", async (req, res) => {
 });
 
 router.post("/login-user", async (req, res) => {
-  const { email, password } = req.body;
+  //console.log(req.body);
+  const { email, password, orgID } = req.body; // Include orgID în request, dacă este disponibil
   try {
-    const oldUser = await User.findOne({ email });
-    if (!oldUser) {
+    let user;
+    if (orgID) {
+      user = await OrganizationUser.findOne({ email });
+    } else {
+      user = await User.findOne({ email });
+    }
+
+    if (!user) {
       return res.status(404).send({ data: "User doesn't exist" });
     }
-    if (oldUser.password !== password) {
+    if (user.password !== password) {
       return res.status(401).send({ data: "Invalid credentials" });
     }
-    res.send({ data: "Login successful" });
+    res.send({ data: "Login successful", userType: orgID ? "organization" : "individual" });
   } catch (error) {
     res.status(500).send({ data: "An error occurred during the login process" });
   }
