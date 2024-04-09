@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Image, TextInput, TouchableOpacity, Button, Text, StyleSheet, ActivityIndicator, ScrollView } from 'react-native';
+import { View, Alert, Image, TextInput, TouchableOpacity, Button, Text, StyleSheet, ActivityIndicator, ScrollView } from 'react-native';
 import { launchImageLibrary } from 'react-native-image-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { styles } from '../styles/button';
@@ -16,11 +16,12 @@ import Fontisto from 'react-native-vector-icons/Fontisto';
 import Error from 'react-native-vector-icons/MaterialIcons';
 import Icon from 'react-native-vector-icons/Entypo';
 import axios from 'axios';
+import ImagePicker from 'react-native-image-crop-picker';
 
  function AdaugaProiectScreen(props) {
   const [startDate, setStartDate] = useState(new Date());
    const [dateVerify, setDateVerify]=useState(false);
-  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showDatePicker, setShowDatePicker] = useState(false);ss
 
   const [name, setProjectName] = useState(''); //aici tin variabila
   const [nameVerify, setNameVerify]=useState(false); //aici o verific daca corespunde sau nu formatului pe care il vreau
@@ -50,6 +51,28 @@ import axios from 'axios';
 
   const [isLoading, setIsLoading] = useState(false); // Declaration of isLoading state
 
+ async function handleSubmit() {
+ const projectData={ projectName:name, description, organizer, email, mobile, organization, country, address, startDate, }  ;
+
+ if(nameVerify && descriptionVerify && organizerVerify && emailVerify && mobileVerify && organizationVerify && countryVerify && addressVerify){
+    axios.post("http://192.168.1.115:5000/addProject", projectData)
+    .then(res=>{
+    console.log(res.data);
+        if(res.data.status=='ok')
+        {
+            Alert.alert("Project added successfully!")
+        }else{
+            Alert.alert(JSON.stringify(res.data));
+        }
+
+    })
+    .catch(e=>console.log(e));
+ }
+ else
+ {
+    Alert.alert("Fill mandatory details!")
+ }
+}
 function handleName(e)
 {
  const nameP=e.nativeEvent.text;
@@ -159,12 +182,6 @@ function handleMobile(e)
     }
   };
 
-  async function handleSubmit() {
-    if (!name || !description || !organizer || !email || !mobile || !organization || !country || !region || !startDate) {
-      setError('All fields are required.');
-      return;
-    }
-}
 
   if (isLoading) {
     return (
@@ -306,7 +323,7 @@ function handleMobile(e)
 
            <View style={{ justifyContent: 'space-around', flexDirection: 'row'}}>
            <View style={{right:'60%'}}>
-             <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+             <TouchableOpacity style={styles.button} onPress={()=>handleSubmit()}>
                <Text style={styles.buttonText}>SUBMIT</Text>
              </TouchableOpacity>
            </View>

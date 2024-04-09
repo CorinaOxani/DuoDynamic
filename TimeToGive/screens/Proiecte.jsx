@@ -6,6 +6,7 @@ import { styles } from '../styles/button';
 import { footerStyles} from '../styles/footer_header';
 import { separatorStyles} from '../styles/separator';
 import { containerStyles} from '../styles/container';
+import ImagePicker from 'react-native-image-crop-picker';
 
 function ProiecteScreen(props){
   return (
@@ -29,7 +30,7 @@ function ProiecteScreen(props){
 
       <ScrollView style={proiecteStyles.content}>
         <Image
-          source={require('../photo/menu.png')}
+          source={require('../photo/no_photo.jpg')}
           style={proiecteStyles.image}
         />
         <Text style={proiecteStyles.eventTitle}>Forest Clean</Text>
