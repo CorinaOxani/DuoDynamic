@@ -70,12 +70,13 @@ export const proiecteStyles = StyleSheet.create({
        paddingHorizontal:15,
        borderWidth:1,
        borderRadius:50,
+       width:'90%',
 
        },
 
        textInput:{
        flex: 1,
        marginTop: -12,
-       width: '90%',
+
        },
 });

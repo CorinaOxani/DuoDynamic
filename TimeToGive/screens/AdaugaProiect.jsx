@@ -21,12 +21,10 @@ import ImagePicker from 'react-native-image-crop-picker';
  function AdaugaProiectScreen(props) {
   const [startDate, setStartDate] = useState(new Date());
    const [dateVerify, setDateVerify]=useState(false);
-  const [showDatePicker, setShowDatePicker] = useState(false);ss
+  const [showDatePicker, setShowDatePicker] = useState(false);
 
   const [name, setProjectName] = useState(''); //aici tin variabila
   const [nameVerify, setNameVerify]=useState(false); //aici o verific daca corespunde sau nu formatului pe care il vreau
-
-  const [projectImage, setProjectImage] = useState(null);
 
   const [description, setDescription] = useState('');
    const [descriptionVerify, setDescriptionVerify]=useState(false);
@@ -51,6 +49,24 @@ import ImagePicker from 'react-native-image-crop-picker';
 
   const [isLoading, setIsLoading] = useState(false); // Declaration of isLoading state
 
+//functie adaugare poza
+const [image,setImage]=useState('')
+const selectPhoto=()=>{
+    ImagePicker.openPicker({
+      width: 300,
+      height: 400,
+      cropping: true,
+      includeBase64:true,
+      freeStyleCropEnabled:true
+    }).then(image => {
+      console.log(image);
+      const data=`data:${image.mime};base64,${image.data}`
+      setImage(data);
+
+    });
+}
+
+//functie care adauga datele in baza de date cand dai submit
  async function handleSubmit() {
  const projectData={ projectName:name, description, organizer, email, mobile, organization, country, address, startDate, }  ;
 
@@ -202,7 +218,7 @@ function handleMobile(e)
   };
 
   return (
-    <View style={containerStyles.container}>
+    <View style={{paddingLeft: '5%', paddingRight:'5%', flex: 1,backgroundColor: '#fff',}}>
 <ScrollView style={{marginTop: 10, marginBottom:10}}>
 <View style={proiecteStyles.action}>
     <TextInput
@@ -318,6 +334,14 @@ function handleMobile(e)
       <Text style={styles.buttonText}>
         Date: {formatDate(startDate)}
       </Text>
+
+      <TouchableOpacity onPress={()=>selectPhoto()}>
+              <Image
+                style={proiecteStyles.image}
+            source={{
+                     uri:image==""? '../photo/no_photo.jpg' : image}}
+              />
+      </TouchableOpacity>
 
 </ScrollView >
 
