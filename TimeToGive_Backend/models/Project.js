@@ -10,7 +10,8 @@ const projectSchema = new mongoose.Schema({
   organization: String,
   country: String,
   address: String,
-  startDate: Date
+  startDate: Date,
+  image:String
 });
 
 module.exports = mongoose.model('ProjectInfo', projectSchema);

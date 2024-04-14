@@ -66,9 +66,25 @@ const selectPhoto=()=>{
     });
 }
 
+const updateProject=()=>{
+const formdata={
+  projectName:projectName,
+  description,
+  organizer,
+  email,
+  mobile,
+  organization,
+  country,
+  address,
+  startDate,
+  image
+}
+axios.post("http://192.168.1.115:5000/update-project",formdata).then(res=>console.log(res))
+}
+
 //functie care adauga datele in baza de date cand dai submit
  async function handleSubmit() {
- const projectData={ projectName:name, description, organizer, email, mobile, organization, country, address, startDate, }  ;
+ const projectData={ projectName:name, description, organizer, email, mobile, organization, country, address, startDate, image}  ;
 
  if(nameVerify && descriptionVerify && organizerVerify && emailVerify && mobileVerify && organizationVerify && countryVerify && addressVerify){
     axios.post("http://192.168.1.115:5000/addProject", projectData)
@@ -338,8 +354,7 @@ function handleMobile(e)
       <TouchableOpacity onPress={()=>selectPhoto()}>
               <Image
                 style={proiecteStyles.image}
-            source={{
-                     uri:image==""? '../photo/no_photo.jpg' : image}}
+          source={image === '' ? require('../photo/no_photo.jpg') : { uri: image }}
               />
       </TouchableOpacity>
 
