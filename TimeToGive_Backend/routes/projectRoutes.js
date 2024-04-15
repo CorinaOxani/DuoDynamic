@@ -17,6 +17,17 @@ router.post("/addProject", async (req, res) => {
   }
 });
 
+// Endpoint pentru a prelua toate proiectele
+router.get("/getProjects", async (req, res) => {
+  try {
+    const projects = await Project.find();
+    res.send({ status: "ok", data: projects });
+  } catch (error) {
+    res.status(500).send({ status: "error", data: "Error retrieving projects!" });
+  }
+});
+
+
 router.post('/update-project', async(req, res)=>{
 const{
   projectName,
