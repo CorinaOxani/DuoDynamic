@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Image, TextInput, TouchableOpacity, Text, ActivityIndicator } from 'react-native';
+import { View, Image, TextInput, TouchableOpacity, Text, ActivityIndicator, Alert } from 'react-native';
 import { styles } from '../styles/button';
 import { logoStyles } from '../styles/logo';
 import { containerStyles } from '../styles/container';
@@ -11,11 +11,14 @@ const RegisterScreen = (props) => {
   const [email, setEmail] = useState('');
   const [mobile, setMobile] = useState('');
   const [password, setPassword] = useState('');
+  const [country, setCountry] = useState('');
+  const [city, setCity] = useState('');
+  const [profileDescription, setProfileDescription] = useState('');
   const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false); // Declaration of isLoading state
+  const [isLoading, setIsLoading] = useState(false);
 
   async function handleSubmit() {
-    if (!name || !email || !mobile || !password) {
+    if (!name || !email || !mobile || !password || !country || !city ||!profileDescription) {
       setError('All fields are required.');
       return;
     }
@@ -27,15 +30,22 @@ const RegisterScreen = (props) => {
       setError('Email must contain @ and a domain.');
       return;
     }
+    if (profileDescription.length < 35) {
+      setError('Profile description must be at least 35 characters long.');
+      return;
+    }
 
     setError('');
-    setIsLoading(true); // Start loading process
+    setIsLoading(true);
 
     const userData = {
       name,
       email,
       mobile,
       password,
+      country,
+      city,
+      profileDescription 
     };
 
     try {
@@ -56,7 +66,7 @@ const RegisterScreen = (props) => {
       console.error('Error:', error);
       setError('An error occurred. Please try again.');
     } finally {
-      setIsLoading(false); // End loading process
+      setIsLoading(false);
     }
   }
 
@@ -70,43 +80,18 @@ const RegisterScreen = (props) => {
   
   return (
     <View style={containerStyles.container}>
-      <Image
-        source={require('../photo/logo.jpg')}
-        style={logoStyles.logo}
-      />
+      <Image source={require('../photo/logo.jpg')} style={logoStyles.logo} />
       <Text style={login_page_styles.welcomeText}>Let's get started!</Text>
-      <TextInput
-        style={login_page_styles.input}
-        onChangeText={setName}
-        value={name}
-        placeholder="Name"
-      />
-      <TextInput
-        style={login_page_styles.input}
-        onChangeText={setEmail}
-        value={email}
-        placeholder="Email"
-        keyboardType="email-address"
-      />
-      <TextInput
-        style={login_page_styles.input}
-        onChangeText={setMobile}
-        value={mobile}
-        placeholder="Mobile"
-        keyboardType="numeric"
-      />
-      <TextInput
-        style={login_page_styles.input}
-        onChangeText={setPassword}
-        value={password}
-        placeholder="Password"
-        secureTextEntry
-      />
-      <View>
-        <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-          <Text style={styles.buttonText}>REGISTER</Text>
-        </TouchableOpacity>
-      </View>
+      <TextInput style={login_page_styles.input} onChangeText={setName} value={name} placeholder="Name" />
+      <TextInput style={login_page_styles.input} onChangeText={setEmail} value={email} placeholder="Email" keyboardType="email-address" />
+      <TextInput style={login_page_styles.input} onChangeText={setMobile} value={mobile} placeholder="Mobile" keyboardType="numeric" />
+      <TextInput style={login_page_styles.input} onChangeText={setPassword} value={password} placeholder="Password" secureTextEntry />
+      <TextInput style={login_page_styles.input} onChangeText={setCountry} value={country} placeholder="Country" />
+      <TextInput style={login_page_styles.input} onChangeText={setCity} value={city} placeholder="City" />
+      <TextInput style={login_page_styles.input} onChangeText={setProfileDescription} value={profileDescription} placeholder="Tell us about yourself (min 35 characters)"/>
+      <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+        <Text style={styles.buttonText}>REGISTER</Text>
+      </TouchableOpacity>
       {error ? <Text style={{color: 'red', textAlign: 'center', marginTop: 10}}>{error}</Text> : null}
       <View style={linkStyles.signUpContainer}>
         <Text style={linkStyles.signUpText}>

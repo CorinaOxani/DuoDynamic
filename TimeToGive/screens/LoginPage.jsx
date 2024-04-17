@@ -2,22 +2,20 @@ import React, { useState } from 'react';
 import { StyleSheet, View, Image, TouchableOpacity, ActivityIndicator, TextInput, Button, Text, Switch } from 'react-native';
 import { styles } from '../styles/button';
 import { styles_page } from '../styles/start_page';
-import { logoStyles} from '../styles/logo';
-import { containerStyles} from '../styles/container';
-import {login_page_styles} from '../styles/login_page';
-import { footerStyles} from '../styles/FooterText';
-import { linkStyles} from '../styles/link';
+import { logoStyles } from '../styles/logo';
+import { containerStyles } from '../styles/container';
+import { login_page_styles } from '../styles/login_page';
+import { footerStyles } from '../styles/FooterText';
+import { linkStyles } from '../styles/link';
 
-function LoginScreen(props){
-
+function LoginScreen(props) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false); 
+  const [isLoading, setIsLoading] = useState(false);
   const [isOrganization, setIsOrganization] = useState(false);
   const [orgID, setOrgID] = useState('');
-
-
+  const [userInfo, setUserInfo] = useState(null);  // Stare nouă pentru stocarea informațiilor utilizatorului
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -32,17 +30,17 @@ function LoginScreen(props){
       setError('RO/CUI is required for organizations.');
       return;
     }
-  
+
     setError('');
-    setIsLoading(true); // Start loading process
-  
+    setIsLoading(true);
+
     try {
       const requestBody = {
         email,
         password,
-        ...(isOrganization && { orgID }) // Adaugă orgID în cerere doar dacă isOrganization este true
+        ...(isOrganization && { orgID })
       };
-  
+
       const response = await fetch('http://10.0.2.2:5000/login-user', {
         method: 'POST',
         headers: {
@@ -50,12 +48,13 @@ function LoginScreen(props){
         },
         body: JSON.stringify(requestBody),
       });
-  
+
       const json = await response.json();
-  
+
       if (response.ok) {
         console.log('Login successful:', json);
-        props.navigation.navigate("Proiecte"); // Navighează la ecranul dorit după login
+        setUserInfo(json); // Salvarea informațiilor utilizatorului
+        props.navigation.navigate("Profile", { userInfo: json }); // Trimiterea informațiilor utilizatorului la următoarea pagină
       } else {
         setError('Login failed. Please try again.');
       }
@@ -63,7 +62,7 @@ function LoginScreen(props){
       console.error('Error:', error);
       setError('An error occurred. Please try again.');
     } finally {
-      setIsLoading(false); // End loading process
+      setIsLoading(false);
     }
   };
 
@@ -77,8 +76,8 @@ function LoginScreen(props){
   return (
     <View style={containerStyles.container}>
       <Image
-            source={require('../photo/logo.jpg')}
-            style={logoStyles.logo}
+        source={require('../photo/logo.jpg')}
+        style={logoStyles.logo}
       />
       <Text style={login_page_styles.welcomeText}>Welcome back!</Text>
       <TextInput
@@ -96,13 +95,13 @@ function LoginScreen(props){
         secureTextEntry
       />
       <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 10 }}>
-      <Text>Are you logging in as an organization?</Text>
-      <Switch
-        value={isOrganization}
-        onValueChange={(newValue) => setIsOrganization(newValue)}
-      />
+        <Text>Are you logging in as an organization?</Text>
+        <Switch
+          value={isOrganization}
+          onValueChange={(newValue) => setIsOrganization(newValue)}
+        />
       </View>
-        {isOrganization && (
+      {isOrganization && (
         <TextInput
           style={login_page_styles.input}
           onChangeText={setOrgID}
@@ -111,19 +110,20 @@ function LoginScreen(props){
         />
       )}
       <View>
-       <TouchableOpacity style={styles.button} onPress={handleLogin}>
-               <Text style={styles.buttonText}>LOGIN</Text>
-             </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={handleLogin}>
+          <Text style={styles.buttonText}>LOGIN</Text>
+        </TouchableOpacity>
       </View>
-       <View style={linkStyles.signUpContainer}>
-              <Text style={linkStyles.signUpText}>
-                If you don't have an account,
-              </Text>
-              <TouchableOpacity onPress={() => props.navigation.navigate("Register")}>
-                <Text style={linkStyles.signUpButtonText}>Sign Up!</Text>
-              </TouchableOpacity>
+      <View style={linkStyles.signUpContainer}>
+        <Text style={linkStyles.signUpText}>
+          If you don't have an account,
+        </Text>
+        <TouchableOpacity onPress={() => props.navigation.navigate("Register")}>
+          <Text style={linkStyles.signUpButtonText}>Sign Up!</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
 };
+
 export default LoginScreen;
