@@ -7,7 +7,8 @@ import { footerStyles} from '../styles/footer_header';
 import { separatorStyles} from '../styles/separator';
 import { containerStyles} from '../styles/container';
 
-function OrganizationsScreen(props){
+function OrganizationsScreen({ route, navigation }){
+  const userInfo = route.params?.userInfo;
   return (
     <View style={containerStyles.container}>
       <View style={footerStyles.header}>
@@ -65,7 +66,7 @@ function OrganizationsScreen(props){
 
       <View style={footerStyles.footer}>
 
-              <TouchableOpacity style={proiecteStyles.row} onPress={() => props.navigation.navigate("Profile")} >
+              <TouchableOpacity style={proiecteStyles.row} onPress={() => navigation.navigate("Profile", { userInfo: userInfo })} >
                      <Image
                            source={require('../photo/om_circle.png')}
                            style={iconStyles.footerIcon}
@@ -75,7 +76,7 @@ function OrganizationsScreen(props){
 
 
 
-        <TouchableOpacity style={proiecteStyles.row}  onPress={() => props.navigation.navigate("Organizations")}>
+        <TouchableOpacity style={proiecteStyles.row}  onPress={() => navigation.navigate("Organizations", { userInfo: userInfo })}>
                <Image
                      source={require('../photo/home_circle.png')}
                      style={iconStyles.footerIcon}
@@ -84,7 +85,7 @@ function OrganizationsScreen(props){
         </TouchableOpacity>
 
 
-        <TouchableOpacity style={proiecteStyles.row} onPress={() => props.navigation.navigate("Proiecte")}>
+        <TouchableOpacity style={proiecteStyles.row} onPress={() => navigation.navigate("Proiecte", { userInfo: userInfo })}>
                <Image
                      source={require('../photo/leaf_circle.png')}
                      style={iconStyles.footerIcon}

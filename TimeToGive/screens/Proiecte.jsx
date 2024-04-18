@@ -9,9 +9,10 @@ import { containerStyles} from '../styles/container';
 import ImagePicker from 'react-native-image-crop-picker';
 import axios from 'axios';
 
-function ProiecteScreen(props){
+function ProiecteScreen({ route, navigation }){
+  const userInfo = route.params?.userInfo;  
 
-const [proiecte, setProiecte] = useState([]);
+  const [proiecte, setProiecte] = useState([]);
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -29,7 +30,7 @@ const [proiecte, setProiecte] = useState([]);
   return (
     <View style={containerStyles.container}>
       <View style={footerStyles.header}>
-        <TouchableOpacity onPress={() => props.navigation.navigate("AdaugaProiect")}>
+        <TouchableOpacity onPress={() => navigation.navigate("AdaugaProiect")}>
                <Image
                      source={require('../photo/add-button.png')}
                      style={iconStyles.antetIcon}
@@ -87,7 +88,8 @@ const [proiecte, setProiecte] = useState([]);
 
       <View style={footerStyles.footer}>
 
-              <TouchableOpacity style={proiecteStyles.row} onPress={() => props.navigation.navigate("Profile")} >
+      <TouchableOpacity style={proiecteStyles.row} onPress={() => navigation.navigate("Profile", { userInfo: userInfo })}>
+
                      <Image
                            source={require('../photo/om_circle.png')}
                            style={iconStyles.footerIcon}
@@ -97,7 +99,7 @@ const [proiecte, setProiecte] = useState([]);
 
 
 
-        <TouchableOpacity style={proiecteStyles.row}  onPress={() => props.navigation.navigate("Organizations")}>
+        <TouchableOpacity style={proiecteStyles.row}  onPress={() => navigation.navigate("Organizations", { userInfo: userInfo })}>
                <Image
                      source={require('../photo/home_circle.png')}
                      style={iconStyles.footerIcon}
@@ -106,7 +108,7 @@ const [proiecte, setProiecte] = useState([]);
         </TouchableOpacity>
 
 
-        <TouchableOpacity style={proiecteStyles.row} onPress={() => props.navigation.navigate("Proiecte")}>
+        <TouchableOpacity style={proiecteStyles.row} onPress={() => navigation.navigate("Proiecte", { userInfo: userInfo })}>
                <Image
                      source={require('../photo/leaf_circle.png')}
                      style={iconStyles.footerIcon}

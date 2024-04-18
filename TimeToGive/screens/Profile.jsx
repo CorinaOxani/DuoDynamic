@@ -106,7 +106,7 @@ function ProfileScreen({ route, navigation }) {
       </ScrollView>
 
       <View style={footerStyles.footer}>
-        <TouchableOpacity style={proiecteStyles.row} onPress={() => navigation.navigate("Profile")}>
+        <TouchableOpacity style={proiecteStyles.row} onPress={() => navigation.navigate("Profile", { userInfo: userInfo })}>
           <Image
             source={require('../photo/om_circle.png')}
             style={iconStyles.footerIcon}
@@ -114,7 +114,7 @@ function ProfileScreen({ route, navigation }) {
           <Text style={proiecteStyles.footerText}>Profile</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={proiecteStyles.row} onPress={() => navigation.navigate("Organizations")}>
+        <TouchableOpacity style={proiecteStyles.row} onPress={() => navigation.navigate("Organizations", { userInfo: userInfo })}>
           <Image
             source={require('../photo/home_circle.png')}
             style={iconStyles.footerIcon}
@@ -122,7 +122,7 @@ function ProfileScreen({ route, navigation }) {
           <Text style={proiecteStyles.footerText}>Organizations</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={proiecteStyles.row} onPress={() => navigation.navigate("Proiecte")}>
+        <TouchableOpacity style={proiecteStyles.row} onPress={() => navigation.navigate("Proiecte", { userInfo: userInfo })}>
           <Image
             source={require('../photo/leaf_circle.png')}
             style={iconStyles.footerIcon}
