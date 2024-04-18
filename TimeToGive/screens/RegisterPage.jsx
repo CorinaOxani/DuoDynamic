@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Image, TextInput, TouchableOpacity, Text, ActivityIndicator, Alert } from 'react-native';
+import { View, Image, TextInput, TouchableOpacity, Text, ActivityIndicator, Alert, StyleSheet } from 'react-native';
 import { styles } from '../styles/button';
 import { logoStyles } from '../styles/logo';
 import { containerStyles } from '../styles/container';
@@ -14,28 +14,32 @@ const RegisterScreen = (props) => {
   const [country, setCountry] = useState('');
   const [city, setCity] = useState('');
   const [profileDescription, setProfileDescription] = useState('');
-  const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
 
   async function handleSubmit() {
-    if (!name || !email || !mobile || !password || !country || !city ||!profileDescription) {
-      setError('All fields are required.');
+    console.log('Submitting registration');
+    if (!name || !email || !mobile || !password || !country || !city || !profileDescription) {
+      console.log('Validation failed: Missing fields');
+      showAlert('All fields are required.');
       return;
     }
     if (!/^[A-Z]/.test(name)) {
-      setError('Name must start with a capital letter.');
+      console.log('Validation failed: Name must start with a capital letter');
+      showAlert('Name must start with a capital letter.');
       return;
     }
     if (!/\S+@\S+\.\S+/.test(email)) {
-      setError('Email must contain @ and a domain.');
+      console.log('Validation failed: Invalid email format');
+      showAlert('Email must contain @ and a domain.');
       return;
     }
     if (profileDescription.length < 35) {
-      setError('Profile description must be at least 35 characters long.');
+      console.log('Validation failed: Profile description too short');
+      showAlert('Profile description must be at least 35 characters long.');
       return;
     }
 
-    setError('');
     setIsLoading(true);
 
     const userData = {
@@ -45,7 +49,7 @@ const RegisterScreen = (props) => {
       password,
       country,
       city,
-      profileDescription 
+      profileDescription
     };
 
     try {
@@ -58,16 +62,27 @@ const RegisterScreen = (props) => {
       });
 
       if (response.ok) {
-        props.navigation.navigate("Login");
+        console.log('Registration successful');
+        setSuccessMessage('Registration successful. Redirecting to login...');
+        setTimeout(() => {
+          props.navigation.navigate("Login");
+        }, 3000);  // Wait for 3 seconds before navigating
       } else {
-        setError('Registration failed. Please try again.');
+        console.log('Registration failed: Server returned non-ok status');
+        showAlert('Registration failed. Please try again.');
       }
-    } catch (error) {
-      console.error('Error:', error);
-      setError('An error occurred. Please try again.');
+    } catch (apiError) {
+      console.error('Error:', apiError);
+      showAlert('An error occurred. Please try again.');
     } finally {
       setIsLoading(false);
     }
+  }
+
+  function showAlert(message) {
+    Alert.alert("Registration Error", message, [
+      { text: "OK" }
+    ]);
   }
 
   if (isLoading) {
@@ -77,7 +92,15 @@ const RegisterScreen = (props) => {
       </View>
     );
   }
-  
+
+  if (successMessage) {
+    return (
+      <View style={containerStyles.successContainer}>
+        <Text style={containerStyles.successText}>{successMessage}</Text>
+      </View>
+    );
+  }
+
   return (
     <View style={containerStyles.container}>
       <Image source={require('../photo/logo.jpg')} style={logoStyles.logo} />
@@ -92,7 +115,6 @@ const RegisterScreen = (props) => {
       <TouchableOpacity style={styles.button} onPress={handleSubmit}>
         <Text style={styles.buttonText}>REGISTER</Text>
       </TouchableOpacity>
-      {error ? <Text style={{color: 'red', textAlign: 'center', marginTop: 10}}>{error}</Text> : null}
       <View style={linkStyles.signUpContainer}>
         <Text style={linkStyles.signUpText}>
           You already have an account?
@@ -104,5 +126,6 @@ const RegisterScreen = (props) => {
     </View>
   );  
 };
+
 
 export default RegisterScreen;

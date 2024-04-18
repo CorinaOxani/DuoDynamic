@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Image, TouchableOpacity, ActivityIndicator, TextInput, Button, Text, Switch } from 'react-native';
+import { StyleSheet, View, Image, TouchableOpacity, ActivityIndicator, TextInput, Button, Text, Switch, Alert } from 'react-native';
 import { styles } from '../styles/button';
 import { styles_page } from '../styles/start_page';
 import { logoStyles } from '../styles/logo';
@@ -11,7 +11,6 @@ import { linkStyles } from '../styles/link';
 function LoginScreen(props) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isOrganization, setIsOrganization] = useState(false);
   const [orgID, setOrgID] = useState('');
@@ -19,19 +18,18 @@ function LoginScreen(props) {
 
   const handleLogin = async () => {
     if (!email || !password) {
-      setError('Email and password are required.');
+      showAlert('Email and password are required.');
       return;
     }
     if (!/\S+@\S+\.\S+/.test(email)) {
-      setError('Email must contain @ and a domain.');
+      showAlert('Email must contain @ and a domain.');
       return;
     }
     if (isOrganization && !orgID) {
-      setError('RO/CUI is required for organizations.');
+      showAlert('RO/CUI is required for organizations.');
       return;
     }
 
-    setError('');
     setIsLoading(true);
 
     try {
@@ -56,15 +54,21 @@ function LoginScreen(props) {
         setUserInfo(json); // Salvarea informațiilor utilizatorului
         props.navigation.navigate("Profile", { userInfo: json }); // Trimiterea informațiilor utilizatorului la următoarea pagină
       } else {
-        setError('Login failed. Please try again.');
+        showAlert('Login failed. Please try again.');
       }
     } catch (error) {
       console.error('Error:', error);
-      setError('An error occurred. Please try again.');
+      showAlert('An error occurred. Please try again.');
     } finally {
       setIsLoading(false);
     }
   };
+
+  function showAlert(message) {
+    Alert.alert("Login Error", message, [
+      { text: "OK" }
+    ]);
+  }
 
   if (isLoading) {
     return (
