@@ -6,7 +6,11 @@ export const containerStyles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#fff',
   },
-
+  containerPage:{
+    flex: 1,
+    justifyContent: 'center',
+    backgroundColor: '#fff',
+  },
   containerAdd: {
       flex: 1,
       justifyContent: 'center',

@@ -9,14 +9,14 @@ router.get("/", (req, res) => {
 });
 
 router.post("/register", async (req, res) => {
-  const { name, email, mobile, password, country, city, profileDescription} = req.body;
+  const { name, email, mobile, password, country, city, profileDescription, image} = req.body;
   try {
     const oldUser = await User.findOne({ email });
     if (oldUser) {
       return res.status(409).send({ message: "User already exists!" });
     }
     const user = await User.create({
-      name, email, mobile, password, country, city, profileDescription
+      name, email, mobile, password, country, city, profileDescription, image
     });
     res.status(201).send({ message: "User created successfully", user });
   } catch (error) {
@@ -49,7 +49,8 @@ router.post("/login-user", async (req, res) => {
       mobile: user.mobile,
       country: user.country,
       city: user.city,
-      profileDescription: user.profileDescription
+      profileDescription: user.profileDescription,
+      image: user.image
     });
   } catch (error) {
     res.status(500).send({ data: "An error occurred during the login process" });

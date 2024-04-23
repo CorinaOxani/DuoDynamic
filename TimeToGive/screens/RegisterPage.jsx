@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
-import { View, Image, TextInput, TouchableOpacity, Text, ActivityIndicator, Alert, StyleSheet } from 'react-native';
+import { View, Image, TextInput, TouchableOpacity, Text, ActivityIndicator, Alert, StyleSheet, ScrollView } from 'react-native';
 import { styles } from '../styles/button';
 import { logoStyles } from '../styles/logo';
 import { containerStyles } from '../styles/container';
+import { userProfileStyles } from '../styles/userProfile';
 import { login_page_styles } from '../styles/login_page';
 import { linkStyles } from '../styles/link';
+import { proiecteStyles} from '../styles/proiecte';
+import ImagePicker from 'react-native-image-crop-picker';
 
 const RegisterScreen = (props) => {
   const [name, setName] = useState('');
@@ -14,12 +17,27 @@ const RegisterScreen = (props) => {
   const [country, setCountry] = useState('');
   const [city, setCity] = useState('');
   const [profileDescription, setProfileDescription] = useState('');
+  const [image,setImage]=useState('')
   const [isLoading, setIsLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
 
+  const selectPhoto=()=>{
+    ImagePicker.openPicker({
+      width: 300,
+      height: 400,
+      cropping: true,
+      includeBase64:true,
+      freeStyleCropEnabled:true
+    }).then(image => {
+      console.log(image);
+      const data=`data:${image.mime};base64,${image.data}`
+      setImage(data);
+
+    });
+  }
   async function handleSubmit() {
     console.log('Submitting registration');
-    if (!name || !email || !mobile || !password || !country || !city || !profileDescription) {
+    if (!name || !email || !mobile || !password || !country || !city || !profileDescription || !image) {
       console.log('Validation failed: Missing fields');
       showAlert('All fields are required.');
       return;
@@ -49,7 +67,8 @@ const RegisterScreen = (props) => {
       password,
       country,
       city,
-      profileDescription
+      profileDescription,
+      image,
     };
 
     try {
@@ -102,29 +121,42 @@ const RegisterScreen = (props) => {
   }
 
   return (
-    <View style={containerStyles.container}>
-      <Image source={require('../photo/logo.jpg')} style={logoStyles.logo} />
-      <Text style={login_page_styles.welcomeText}>Let's get started!</Text>
-      <TextInput style={login_page_styles.input} onChangeText={setName} value={name} placeholder="Name" />
-      <TextInput style={login_page_styles.input} onChangeText={setEmail} value={email} placeholder="Email" keyboardType="email-address" />
-      <TextInput style={login_page_styles.input} onChangeText={setMobile} value={mobile} placeholder="Mobile" keyboardType="numeric" />
-      <TextInput style={login_page_styles.input} onChangeText={setPassword} value={password} placeholder="Password" secureTextEntry />
-      <TextInput style={login_page_styles.input} onChangeText={setCountry} value={country} placeholder="Country" />
-      <TextInput style={login_page_styles.input} onChangeText={setCity} value={city} placeholder="City" />
-      <TextInput style={login_page_styles.input} onChangeText={setProfileDescription} value={profileDescription} placeholder="Tell us about yourself (min 35 characters)"/>
-      <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-        <Text style={styles.buttonText}>REGISTER</Text>
-      </TouchableOpacity>
-      <View style={linkStyles.signUpContainer}>
-        <Text style={linkStyles.signUpText}>
-          You already have an account?
-        </Text>
-        <TouchableOpacity onPress={() => props.navigation.navigate("Login")}>
-          <Text style={linkStyles.signUpButtonText}>Sign In!</Text>
+    <View >
+      <ScrollView >
+      <View style={containerStyles.container}>
+        <Image source={require('../photo/logo.jpg')} style={logoStyles.logo} />
+        <Text style={login_page_styles.welcomeText}>Let's get started!</Text>
+        <TextInput style={login_page_styles.input} onChangeText={setName} value={name} placeholder="Name" />
+        <TextInput style={login_page_styles.input} onChangeText={setEmail} value={email} placeholder="Email" keyboardType="email-address" />
+        <TextInput style={login_page_styles.input} onChangeText={setMobile} value={mobile} placeholder="Mobile" keyboardType="numeric" />
+        <TextInput style={login_page_styles.input} onChangeText={setPassword} value={password} placeholder="Password" secureTextEntry />
+        <TextInput style={login_page_styles.input} onChangeText={setCountry} value={country} placeholder="Country" />
+        <TextInput style={login_page_styles.input} onChangeText={setCity} value={city} placeholder="City" />
+        <TextInput style={login_page_styles.input} onChangeText={setProfileDescription} value={profileDescription} placeholder="Tell us about yourself (min 35 characters)"/>
+        <Text style={login_page_styles.welcomeText}>Click on icon to select an avatar </Text>
+        <TouchableOpacity onPress={selectPhoto}>
+          <Image
+            style={userProfileStyles.imageAvatar}
+            source={image === '' ? require('../photo/profile-icon.png') : { uri: image }}
+          />
         </TouchableOpacity>
-      </View>
+        </View>
+        <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+          <Text style={styles.buttonText}>REGISTER</Text>
+        </TouchableOpacity>
+        <View style={linkStyles.signUpContainer}>
+          <Text style={linkStyles.signUpText}>
+            You already have an account?
+          </Text>
+          <TouchableOpacity onPress={() => props.navigation.navigate("Login")}>
+            <Text style={linkStyles.signUpButtonText}>Sign In!</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={{ height: 100 }}></View>
+      </ScrollView>
     </View>
-  );  
+  );
+  
 };
 
 

@@ -5,6 +5,7 @@ import { proiecteStyles } from '../styles/proiecte';
 import { footerStyles } from '../styles/footer_header';
 import { separatorStyles } from '../styles/separator';
 import { containerStyles } from '../styles/container';
+import { userProfileStyles } from '../styles/userProfile';
 import { styles } from '../styles/button';
 
 function ProfileScreen({ route, navigation }) {
@@ -49,7 +50,7 @@ function ProfileScreen({ route, navigation }) {
   };
   
   return (
-    <View style={containerStyles.container}>
+    <View style={containerStyles.containerPage}>
       <View style={footerStyles.header}>
         <Text style={footerStyles.headerTitle}>Profile</Text>
         <TouchableOpacity>
@@ -62,9 +63,13 @@ function ProfileScreen({ route, navigation }) {
 
       <ScrollView style={proiecteStyles.content}>
         <Image
-          source={require('../photo/menu.png')}
+          source={require('../photo/background.jpg')}
           style={proiecteStyles.image}
         />
+        <Image
+        source={{ uri: userInfo.image }} 
+        style={userProfileStyles.avatarStyle}
+      />
         <View style={separatorStyles.separator} />
         <View>
           <Text style={proiecteStyles.text}>Description:</Text>
