@@ -26,6 +26,9 @@ import ImagePicker from 'react-native-image-crop-picker';
   const [name, setProjectName] = useState(''); //aici tin variabila
   const [nameVerify, setNameVerify]=useState(false); //aici o verific daca corespunde sau nu formatului pe care il vreau
 
+  const [spots, setSpots] = useState('');
+   const [spotsVerify, setSpotsVerify]=useState(false);
+
   const [description, setDescription] = useState('');
    const [descriptionVerify, setDescriptionVerify]=useState(false);
 
@@ -69,6 +72,7 @@ const selectPhoto=()=>{
 const updateProject=()=>{
 const formdata={
   projectName:projectName,
+  spots,
   description,
   organizer,
   email,
@@ -84,9 +88,9 @@ axios.post("http://192.168.1.115:5000/update-project",formdata).then(res=>consol
 
 //functie care adauga datele in baza de date cand dai submit
  async function handleSubmit() {
- const projectData={ projectName:name, description, organizer, email, mobile, organization, country, address, startDate, image}  ;
+ const projectData={ projectName:name, spots, description, organizer, email, mobile, organization, country, address, startDate, image}  ;
 
- if(nameVerify && descriptionVerify && organizerVerify && emailVerify && mobileVerify && organizationVerify && countryVerify && addressVerify){
+ if(nameVerify && spotsVerify && descriptionVerify && organizerVerify && emailVerify && mobileVerify && organizationVerify && countryVerify && addressVerify){
     axios.post("http://192.168.1.115:5000/addProject", projectData)
     .then(res=>{
     console.log(res.data);
@@ -105,14 +109,26 @@ axios.post("http://192.168.1.115:5000/update-project",formdata).then(res=>consol
     Alert.alert("Fill mandatory details!")
  }
 }
+
 function handleName(e)
 {
  const nameP=e.nativeEvent.text;
  setProjectName(nameP);
  setNameVerify(false);
- if(nameP.length>1)
+ if (nameP.length>1)
  {
     setNameVerify(true);
+ }
+}
+
+function handleSpots(e)
+{
+ const spotsP=e.nativeEvent.text;
+ setSpots(spotsP);
+ setSpotsVerify(false);
+ if (parseInt(spotsP, 10) >= 5)
+ {
+    setSpotsVerify(true);
  }
 }
 
@@ -243,10 +259,23 @@ function handleMobile(e)
             placeholder="Project Name"
 
           />
-          { name.length<1? null : nameVerify ?( <Image source={require('../photo/yes.png')}style={{height:15, width:15, flexDirection: 'row', marginTop:6,}}/>) : (<Image source={require('../photo/circle.png')}style={{height:15, width:15, flexDirection: 'row', marginTop:6,}}/>)}
+          {  name.length<1? null : nameVerify ?( <Image source={require('../photo/yes.png')}style={{height:15, width:15, flexDirection: 'row', marginTop:6,}}/>) : (<Image source={require('../photo/circle.png')}style={{height:15, width:15, flexDirection: 'row', marginTop:6,}}/>)}
  </View>
- { name.length<1? null : nameVerify ? null :(
+ {  name.length<1? null : nameVerify ? null :(
  <Text style={{marginLeft:20, color:'red'}}> Name should be more than 1 character.</Text> )}
+
+<View style={proiecteStyles.action}>
+    <TextInput
+            style={proiecteStyles.textInput}
+            onChange={e=>handleSpots(e)}
+            placeholder="Available Spots"
+             keyboardType="numeric"
+
+          />
+          { spots== ''  ? null : spotsVerify ?( <Image source={require('../photo/yes.png')}style={{height:15, width:15, flexDirection: 'row', marginTop:6,}}/>) : (<Image source={require('../photo/circle.png')}style={{height:15, width:15, flexDirection: 'row', marginTop:6,}}/>)}
+ </View>
+ {  spots== ''  ? null : spotsVerify ? null :(
+ <Text style={{marginLeft:20, color:'red'}}> Introduce a spot  number. Spots number should be at least 5.</Text> )}
 
 <View style={proiecteStyles.action}>
     <TextInput

@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import { StyleSheet, View, Text, Image, TextInput, TouchableOpacity, ScrollView,FlatList } from 'react-native';
+import { StyleSheet, Alert, View, Text, Image, TextInput, TouchableOpacity, ScrollView,FlatList } from 'react-native';
 import { iconStyles} from '../styles/icon';
 import { proiecteStyles} from '../styles/proiecte';
 import { styles } from '../styles/button';
@@ -28,6 +28,25 @@ const fetchProjects = async () => {
     }
   };
 
+const applyToProject = () => {
+  // Presupunând că ai `projectId` și `userId` disponibile în componentă
+  const payload = {
+    projectId: 'id-ul-proiectului',
+    userId: 'id-ul-utilizatorului'
+  };
+
+  axios.post('http://192.168.1.115:5000/applyToProject', payload)
+    .then(response => {
+      // Logica de succes - actualizează interfața utilizatorului
+      Alert.alert(response.data.message);
+      // Poți de asemenea să actualizezi starea locală pentru a reflecta schimbările
+    })
+    .catch(error => {
+      // Logica de eroare
+      Alert.alert('Error', error.response.data.message);
+    });
+};
+
   useEffect(() => {
     fetchProjects();
   }, []);
@@ -35,7 +54,7 @@ const fetchProjects = async () => {
    return (
      <View style={containerStyles.container}>
        <View style={footerStyles.header}>
-         <TouchableOpacity>
+         <TouchableOpacity onPress={() => navigation.navigate("AdaugaProiect")}>
                 <Image
                       source={require('../photo/add-button.png')}
                       style={iconStyles.antetIcon}
@@ -71,8 +90,9 @@ const fetchProjects = async () => {
 
          <View style={separatorStyles.separator} />
          <View style={proiecteStyles.AvailableContainer}>
-         <Text style={proiecteStyles.text}>Available spots: 3/27</Text>
-         <TouchableOpacity style={styles.button}>
+
+         <Text style={proiecteStyles.text}>Available spots: {item.spots}/{item.spots}</Text>
+         <TouchableOpacity onPress={applyToProject} style={styles.button}>
            <Text style={proiecteStyles.applayText}>APPLY</Text>
          </TouchableOpacity>
          </View>
