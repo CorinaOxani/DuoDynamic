@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
-import { View, Text, Image, TextInput, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import { View, Modal, Text, Image, TextInput, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { iconStyles } from '../styles/icon';
 import { proiecteStyles } from '../styles/proiecte';
 import { footerStyles } from '../styles/footer_header';
 import { separatorStyles } from '../styles/separator';
 import { containerStyles } from '../styles/container';
 import { userProfileStyles } from '../styles/userProfile';
+import { menuStyles } from '../styles/menu'; 
 import { styles } from '../styles/button';
 import ImagePicker from 'react-native-image-crop-picker';
 
 function ProfileScreen({ route, navigation }) {
   const userInfo = route.params?.userInfo;
+  const [modalVisible, setModalVisible] = useState(false);
   const [editedDescription, setEditedDescription] = useState(userInfo.profileDescription || '');
   const [editedImage, setEditedImage] = useState(userInfo.image || '');
   const [isEdited, setIsEdited] = useState(false);
@@ -77,12 +79,31 @@ function ProfileScreen({ route, navigation }) {
       <View style={containerStyles.containerPage}>
       <View style={footerStyles.header}>
         <Text style={footerStyles.headerTitle}>Organization's Profile</Text>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => setModalVisible(true)}>
           <Image
             source={require('../photo/menu.png')}
-            style={iconStyles.antetIcon}
+            style={{ width: 50, height: 50 }}  
           />
         </TouchableOpacity>
+            <Modal
+              animationType="slide"
+              transparent={true}
+              visible={modalVisible}
+              onRequestClose={() => setModalVisible(!modalVisible)}
+            >
+              <View style={menuStyles.centeredView}>
+                <View style={menuStyles.modalView}>
+                  <Text style={menuStyles.menuItem}>Settings</Text>
+                  <Text style={menuStyles.menuItem}>Logout</Text>
+                  <TouchableOpacity
+                    style={[menuStyles.button, menuStyles.buttonClose]}
+                    onPress={() => setModalVisible(!modalVisible)}
+                  >
+                    <Text style={menuStyles.textStyle}>Close Menu</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </Modal>
       </View>
 
       <ScrollView style={proiecteStyles.content}>
