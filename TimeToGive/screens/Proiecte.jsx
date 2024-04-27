@@ -54,12 +54,14 @@ const applyToProject = () => {
    return (
      <View style={containerStyles.container}>
        <View style={footerStyles.header}>
-         <TouchableOpacity onPress={() => navigation.navigate("AdaugaProiect")}>
-                <Image
-                      source={require('../photo/add-button.png')}
-                      style={iconStyles.antetIcon}
-                />
-         </TouchableOpacity>
+        {userInfo.userType === 'organization' && (
+                    <TouchableOpacity onPress={() => navigation.navigate("AdaugaProiect")}>
+                        <Image
+                            source={require('../photo/add-button.png')}
+                            style={iconStyles.antetIcon}
+                        />
+                    </TouchableOpacity>
+        )}
          <Text style={footerStyles.headerTitle}>Proiecte</Text>
          <TouchableOpacity >
                 <Image

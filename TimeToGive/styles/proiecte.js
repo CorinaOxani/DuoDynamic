@@ -79,4 +79,7 @@ export const proiecteStyles = StyleSheet.create({
        marginTop: -12,
 
        },
+       messageText:{
+        paddingLeft:45
+       }
 });

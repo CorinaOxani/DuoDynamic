@@ -9,7 +9,11 @@ const userSchema = new mongoose.Schema({
   country: String,        
   city: String,           
   profileDescription: String,
-  image: String       
+  image: String ,
+  personalProjects: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'ProjectInfo'  // Assuming you have a Project model defined somewhere
+  }],   
 });
 
 module.exports = mongoose.model('UserInfo', userSchema,'UserInfo');

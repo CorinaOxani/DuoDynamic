@@ -16,7 +16,7 @@ router.post("/register", async (req, res) => {
       return res.status(409).send({ message: "User already exists!" });
     }
     const user = await User.create({
-      name, email, mobile, password, country, city, profileDescription, image
+      name, email, mobile, password, country, city, profileDescription, image, personalProjects: []
     });
     res.status(201).send({ message: "User created successfully", user });
   } catch (error) {
@@ -50,35 +50,43 @@ router.post("/login-user", async (req, res) => {
       country: user.country,
       city: user.city,
       profileDescription: user.profileDescription,
-      image: user.image
+      image: user.image,
+      personalProjects: user.personalProjects
+
     });
   } catch (error) {
     res.status(500).send({ data: "An error occurred during the login process" });
   }
 });
 
-router.put("/update-description/:userEmail", async (req, res) => {
+router.put("/update-user/:userEmail", async (req, res) => {
   const { userEmail } = req.params;
-  const { profileDescription } = req.body;
+  const updates = req.body;
 
   try {
-    //console.log("Received update request for user:", userEmail);
-    const user = await User.findOne({ email: userEmail });
+    // Attempt to update a regular user
+    let user = await User.findOneAndUpdate({ email: userEmail }, { $set: updates }, { new: true });
+    
+    // If not found, try updating an organization user
+    if (!user) {
+      user = await OrganizationUser.findOneAndUpdate({ email: userEmail }, { $set: updates }, { new: true });
+    }
+
+    // If no user is found in either collection, return an error
     if (!user) {
       console.log("User not found:", userEmail);
       return res.status(404).send({ message: "User not found" });
     }
-    //console.log("Updating profile description for user:", userEmail);
-    user.profileDescription = profileDescription;
-    await user.save();
-    //console.log("Profile description updated successfully for user:", userEmail);
 
-    res.status(200).send({ message: "Profile description updated successfully", user });
+    // Successfully updated
+    console.log("User updated successfully for user:", userEmail);
+    res.status(200).send({ message: "User updated successfully", user });
   } catch (error) {
-    console.error("Error updating profile description:", error);
-    res.status(500).send({ message: "Error updating profile description", error: error.message });
+    console.error("Error updating user:", error);
+    res.status(500).send({ message: "Error updating user", error: error.message });
   }
 });
+
 
 
 module.exports = router;
