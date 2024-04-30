@@ -201,7 +201,7 @@ function ProfileScreen({ route, navigation }) {
             value={editedDescription}
             multiline={true}
           />
-          {isDescriptionEdited && (
+          {isEdited && (   /*isDescriptionEdited ????????????????????????????*/
             <TouchableOpacity style={styles.button} onPress={updatedUserInfo}>
               <Text style={styles.buttonText}>Save</Text>
             </TouchableOpacity>

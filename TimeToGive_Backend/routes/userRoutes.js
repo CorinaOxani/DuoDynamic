@@ -43,6 +43,7 @@ router.post("/login-user", async (req, res) => {
     }
     res.send({
       data: "Login successful",
+      _id: user._id,
       userType: orgID ? "organization" : "individual",
       email: user.email, 
       name: user.name,  

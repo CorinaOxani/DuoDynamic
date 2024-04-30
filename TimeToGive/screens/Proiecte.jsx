@@ -13,6 +13,9 @@ import moment from 'moment';
 function ProiecteScreen({ route, navigation }){
    const userInfo = route.params?.userInfo;
    const [projects, setProjects] = useState([]);
+const [refreshProjects, setRefreshProjects] = useState(false);
+
+
 
 const fetchProjects = async () => {
     try {
@@ -28,24 +31,47 @@ const fetchProjects = async () => {
     }
   };
 
-const applyToProject = () => {
-  // Presupunând că ai `projectId` și `userId` disponibile în componentă
-  const payload = {
-    projectId: 'id-ul-proiectului',
-    userId: 'id-ul-utilizatorului'
-  };
 
-  axios.post('http://192.168.1.115:5000/applyToProject', payload)
-    .then(response => {
-      // Logica de succes - actualizează interfața utilizatorului
-      Alert.alert(response.data.message);
-      // Poți de asemenea să actualizezi starea locală pentru a reflecta schimbările
-    })
-    .catch(error => {
-      // Logica de eroare
-      Alert.alert('Error', error.response.data.message);
-    });
+const applyToProject = async (projectId) => {
+  // Obține userId din userInfo sau din starea aplicației, dacă este salvat acolo
+  const userId = userInfo._id;
+
+  // Verifică local dacă utilizatorul a aplicat deja la proiect
+  const alreadyApplied = userInfo.personalProjects.some(p => p.projectId === projectId);
+  if (alreadyApplied) {
+    Alert.alert("Already Applied", "You have already applied to this project.");
+    return; // Oprire pentru a nu trimite cererea către backend
+  }
+
+  try {
+    const project = projects.find(proj => proj._id === projectId);
+    const currentDate = new Date();
+    const projectDate = new Date(project.startDate);
+
+    if (projectDate < currentDate) {
+      Alert.alert("Project Date Over", "You cannot apply to projects with past start date.");
+      return; // Oprire pentru a nu trimite cererea către backend
+    }
+
+    const response = await axios.post(`http://10.0.2.2:5000/apply/${projectId}`, { userId });
+    const data = response.data;
+
+    if (data.success) {
+      Alert.alert("Success", "You have successfully applied to the project.");
+      setRefreshProjects(true); // Setează starea pentru a reîncărca proiectele
+      // Actualizează state-ul local pentru a reflecta schimbarea în UI, dacă este necesar
+    } else {
+      throw new Error(data.message || "Failed to apply to the project");
+    }
+  } catch (error) {
+    console.error('Error applying to project:', error);
+    Alert.alert("Error", error.message || "An error occurred while applying to the project.");
+  }
 };
+
+
+
+
 
   useEffect(() => {
     fetchProjects();
@@ -54,7 +80,7 @@ const applyToProject = () => {
    return (
      <View style={containerStyles.container}>
        <View style={footerStyles.header}>
-        {userInfo.userType === 'organization' && (
+        {userInfo && userInfo.userType === 'organization' && (
                     <TouchableOpacity onPress={() => navigation.navigate("AdaugaProiect")}>
                         <Image
                             source={require('../photo/add-button.png')}
@@ -93,8 +119,8 @@ const applyToProject = () => {
          <View style={separatorStyles.separator} />
          <View style={proiecteStyles.AvailableContainer}>
 
-         <Text style={proiecteStyles.text}>Available spots: {item.spots}/{item.spots}</Text>
-         <TouchableOpacity onPress={applyToProject} style={styles.button}>
+         <Text style={proiecteStyles.text}>Available spots: {item.availableSpots}/{item.spots}</Text>
+         <TouchableOpacity onPress={() => applyToProject(item._id)} style={styles.button}>
            <Text style={proiecteStyles.applayText}>APPLY</Text>
          </TouchableOpacity>
          </View>

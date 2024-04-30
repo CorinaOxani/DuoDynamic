@@ -10,10 +10,13 @@ const userSchema = new mongoose.Schema({
   city: String,           
   profileDescription: String,
   image: String ,
-  personalProjects: [{
+personalProjects: [{
+  projectId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'ProjectInfo'  // Assuming you have a Project model defined somewhere
-  }],   
+    ref: 'ProjectInfo'
+  },
+  projectName: String  // Adaugă numele proiectului aici
+}],
 });
 
 module.exports = mongoose.model('UserInfo', userSchema,'UserInfo');

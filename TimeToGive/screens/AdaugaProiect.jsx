@@ -91,7 +91,7 @@ axios.post("http://192.168.1.115:5000/update-project",formdata).then(res=>consol
  const projectData={ projectName:name, spots, description, organizer, email, mobile, organization, country, address, startDate, image}  ;
 
  if(nameVerify && spotsVerify && descriptionVerify && organizerVerify && emailVerify && mobileVerify && organizationVerify && countryVerify && addressVerify){
-    axios.post("http://192.168.1.115:5000/addProject", projectData)
+    axios.post("http://192.168.100.34:5000/addProject", projectData)
     .then(res=>{
     console.log(res.data);
         if(res.data.status=='ok')
