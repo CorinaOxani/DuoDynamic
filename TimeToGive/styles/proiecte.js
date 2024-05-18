@@ -77,6 +77,7 @@ export const proiecteStyles = StyleSheet.create({
        textInput:{
        flex: 1,
        marginTop: -12,
+       color: 'black',
 
        },
        messageText:{

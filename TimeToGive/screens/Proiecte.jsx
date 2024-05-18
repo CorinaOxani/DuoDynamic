@@ -81,7 +81,7 @@ const applyToProject = async (projectId) => {
      <View style={containerStyles.container}>
        <View style={footerStyles.header}>
         {userInfo && userInfo.userType === 'organization' && (
-                    <TouchableOpacity onPress={() => navigation.navigate("AdaugaProiect")}>
+                    <TouchableOpacity onPress={() => navigation.navigate("AdaugaProiect", { userInfo })}>
                         <Image
                             source={require('../photo/add-button.png')}
                             style={iconStyles.antetIcon}

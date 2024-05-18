@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Alert, Image, TextInput, TouchableOpacity, Button, Text, StyleSheet, ActivityIndicator, ScrollView } from 'react-native';
 import { launchImageLibrary } from 'react-native-image-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { styles } from '../styles/button';
 import { styles_page } from '../styles/start_page';
 import { logoStyles} from '../styles/logo';
@@ -18,10 +19,12 @@ import Icon from 'react-native-vector-icons/Entypo';
 import axios from 'axios';
 import ImagePicker from 'react-native-image-crop-picker';
 
- function AdaugaProiectScreen(props) {
+ function AdaugaProiectScreen({ route, navigation }) {
+ const userInfo = route.params?.userInfo;
   const [startDate, setStartDate] = useState(new Date());
    const [dateVerify, setDateVerify]=useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
+   const [organizationName, setOrganizationName] = useState('');
 
   const [name, setProjectName] = useState(''); //aici tin variabila
   const [nameVerify, setNameVerify]=useState(false); //aici o verific daca corespunde sau nu formatului pe care il vreau
@@ -51,6 +54,49 @@ import ImagePicker from 'react-native-image-crop-picker';
   const [addressVerify, setAddressVerify]=useState(false);
 
   const [isLoading, setIsLoading] = useState(false); // Declaration of isLoading state
+
+//   useEffect(() => {
+//     const fetchOrganizationDetails = async () => {
+//       try {
+//
+//         const response = await axios.get('http://10.0.2.2:5000/current-organization');  console.log("######");
+//         setOrganizationName(response.data.orgName); // Actualizează conform structurii răspunsului tău
+//       } catch (error) {
+//         console.error('Failed to fetch organization details:', error);
+//         Alert.alert("Error", "Failed to load organization data.");
+//       }
+//     };
+//
+//     fetchOrganizationDetails();
+//   }, []);
+
+  useEffect(() => {
+    const fetchOrganizationDetails = async () => {
+      try {
+        if (!userInfo || !userInfo._id) {
+          throw new Error('User information is missing.');
+        }
+
+        const oID = userInfo._id; // Obține `_id` din detaliile utilizatorului
+        console.log('Fetched orgID:', oID); // Log orgID
+
+        const response = await axios.get(`http://10.0.2.2:5000/current-organization?_id=${oID}`);
+        console.log('Organization response:', response.data);
+        if (response.data && response.data.orgName) {
+          setOrganizationName(response.data.orgName);
+          console.log('Organization name set:', response.data.orgName);
+        } else {
+          console.log('Organization name not found in response:', response.data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch organization details:', error.message);
+        console.error('Error details:', error);
+        Alert.alert("Error", "Failed to load organization data.");
+      }
+    };
+
+    fetchOrganizationDetails();
+  }, [userInfo]);
 
 //functie adaugare poza
 const [image,setImage]=useState('')
@@ -88,7 +134,7 @@ axios.post("http://192.168.1.115:5000/update-project",formdata).then(res=>consol
 
 //functie care adauga datele in baza de date cand dai submit
  async function handleSubmit() {
- const projectData={ projectName:name, spots, description, organizer, email, mobile, organization, country, address, startDate, image}  ;
+ const projectData={ projectName:name, spots, description, organizer, email, mobile, organization:organizationName, country, address, startDate, image}  ;
 
  if(nameVerify && spotsVerify && descriptionVerify && organizerVerify && emailVerify && mobileVerify && organizationVerify && countryVerify && addressVerify){
     axios.post("http://192.168.100.34:5000/addProject", projectData)
@@ -324,17 +370,14 @@ function handleMobile(e)
   { mobile.length<1? null : mobileVerify ? null :(
 <Text style={{marginLeft:20, color:'red'}}> Introduce a correct phone number!</Text> )}
 
-  <View style={proiecteStyles.action}>
-        <TextInput
-                style={proiecteStyles.textInput}
-                onChange={e=>handleOrganization(e)}
-                placeholder="Organization"
-
-              />
-              { organization.length<1? null : organizationVerify ?( <Image source={require('../photo/yes.png')}style={{height:15, width:15, flexDirection: 'row', marginTop:6,}}/>) : (<Image source={require('../photo/circle.png')}style={{height:15, width:15, flexDirection: 'row', marginTop:6,}}/>)}
-  </View>
-   { organization.length<1? null : organizationVerify ? null :(
-<Text style={{marginLeft:20, color:'red'}}> Organization name should be more than 1 character.</Text> )}
+<View style={proiecteStyles.action}>
+  <TextInput
+    style={proiecteStyles.textInput}
+    value={organizationName} // Utilizează state-ul pentru a seta valoarea
+    placeholder="Organization"
+    editable={false}
+  />
+</View>
 
   <View style={proiecteStyles.action}>
         <TextInput
@@ -396,7 +439,7 @@ function handleMobile(e)
              </TouchableOpacity>
            </View>
            <View style={{left:'60%'}}>
-             <TouchableOpacity style={styles.button} onPress={() => props.navigation.navigate("Proiecte")}>
+             <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("Proiecte", { userInfo: userInfo })}>
                <Text style={styles.buttonText}>BACK</Text>
              </TouchableOpacity>
            </View>
