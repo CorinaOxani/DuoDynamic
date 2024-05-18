@@ -84,6 +84,7 @@ import ImagePicker from 'react-native-image-crop-picker';
         console.log('Organization response:', response.data);
         if (response.data && response.data.orgName) {
           setOrganizationName(response.data.orgName);
+          setOrganizationVerify(true); // Setează organizationVerify la true
           console.log('Organization name set:', response.data.orgName);
         } else {
           console.log('Organization name not found in response:', response.data);

@@ -113,6 +113,12 @@ function ProfileScreen({ route, navigation }) {
           style={proiecteStyles.image}
         />
         </TouchableOpacity>
+
+         <View style={separatorStyles.separator} />
+         <View>
+           <Text style={proiecteStyles.text}>Organization Name: {userInfo.name || 'No name provided'}</Text>
+         </View>
+
         <View style={separatorStyles.separator} />
         <View>
           <Text style={proiecteStyles.text}>Description:</Text>
@@ -130,8 +136,7 @@ function ProfileScreen({ route, navigation }) {
           <Text style={proiecteStyles.text}>Contact Us:</Text>
           <Text style={proiecteStyles.infoText}>Email: {userInfo.email || 'No email provided'}</Text>
           <Text style={proiecteStyles.infoText}>Call Center: {userInfo.mobile || 'No Phone number provided'}</Text>
-          <Text style={proiecteStyles.infoText}>Country: {userInfo.country || 'No Country provided'}</Text>
-          <Text style={proiecteStyles.infoText}>City: {userInfo.city || 'No City provided'}</Text>
+
           {isEdited && (
             <TouchableOpacity style={styles.button} onPress={updateUserInfo}>
               <Text style={styles.buttonText}>Save your changes!</Text>
@@ -167,7 +172,7 @@ function ProfileScreen({ route, navigation }) {
       </View>
     </View>
   );
-    
+
   }
 
   // Return the standard profile layout for other user types
@@ -189,7 +194,7 @@ function ProfileScreen({ route, navigation }) {
           style={proiecteStyles.image}
         />
         <Image
-          source={{ uri: userInfo.image }} 
+          source={{ uri: userInfo.image }}
           style={userProfileStyles.avatarStyle}
         />
         <View style={separatorStyles.separator} />
@@ -201,8 +206,8 @@ function ProfileScreen({ route, navigation }) {
             value={editedDescription}
             multiline={true}
           />
-          {isEdited && (   /*isDescriptionEdited ????????????????????????????*/
-            <TouchableOpacity style={styles.button} onPress={updatedUserInfo}>
+          {isEdited && (
+            <TouchableOpacity style={styles.button} onPress={updateUserInfo}>
               <Text style={styles.buttonText}>Save</Text>
             </TouchableOpacity>
           )}

@@ -82,5 +82,16 @@ export const proiecteStyles = StyleSheet.create({
        },
        messageText:{
         paddingLeft:45
-       }
+       },
+
+      noProjectsContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 20,
+      },
+      noProjectsText: {
+        fontSize: 16,
+        color: 'gray',
+      },
 });
