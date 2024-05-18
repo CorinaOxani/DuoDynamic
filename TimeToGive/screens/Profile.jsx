@@ -228,7 +228,7 @@ function ProfileScreen({ route, navigation }) {
       <View style={footerStyles.footer}>
         <TouchableOpacity style={proiecteStyles.row} onPress={() => navigation.navigate("Profile", { userInfo })}>
           <Image
-            source={require('../photo/om_circle.png')}
+           source={require('../photo/home_circle.png')}
             style={iconStyles.footerIcon}
           />
           <Text style={proiecteStyles.footerText}>Profile</Text>
@@ -236,10 +236,10 @@ function ProfileScreen({ route, navigation }) {
 
         <TouchableOpacity style={proiecteStyles.row} onPress={() => navigation.navigate("Organizations", { userInfo })}>
           <Image
-            source={require('../photo/home_circle.png')}
+            source={require('../photo/om_circle.png')}
             style={iconStyles.footerIcon}
           />
-          <Text style={proiecteStyles.footerText}>Organizations</Text>
+          <Text style={proiecteStyles.footerText}>All Users</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={proiecteStyles.row} onPress={() => navigation.navigate("Proiecte", { userInfo })}>
