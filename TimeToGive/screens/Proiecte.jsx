@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, Alert, View, Text, Image, TextInput, TouchableOpacity, ScrollView, FlatList } from 'react-native';
 import { iconStyles } from '../styles/icon';
 import { proiecteStyles } from '../styles/proiecte';
@@ -15,11 +15,21 @@ function ProiecteScreen({ route, navigation }) {
    const [projects, setProjects] = useState([]);
    const [refreshProjects, setRefreshProjects] = useState(false);
    const [noProjectsMessage, setNoProjectsMessage] = useState('');
+   const [searchTerm, setSearchTerm] = useState(''); // Starea pentru termenul de căutare
+   const [filteredProjects, setFilteredProjects] = useState([]); // Starea pentru proiectele filtrate
 
    useEffect(() => {
     console.log("UserInfo in ProiecteScreen:", userInfo); // Verifică structura lui userInfo
     fetchProjects();
   }, [refreshProjects]);
+
+  useEffect(() => {
+    // Filtrăm proiectele pe baza termenului de căutare
+    const filtered = projects.filter(project =>
+      project.projectName.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredProjects(filtered);
+  }, [searchTerm, projects]);
 
   const fetchProjects = async () => {
     try {
@@ -83,7 +93,9 @@ function ProiecteScreen({ route, navigation }) {
       Alert.alert("Error", error.message || "An error occurred while applying to the project.");
     }
   };
-
+  const handleLogout = () => {
+    navigation.navigate('Login');
+  };
    return (
      <View style={containerStyles.container}>
        <View style={footerStyles.header}>
@@ -96,21 +108,26 @@ function ProiecteScreen({ route, navigation }) {
           </TouchableOpacity>
         )}
         <Text style={footerStyles.headerTitle}>Proiecte</Text>
-        <TouchableOpacity >
+        <TouchableOpacity onPress={handleLogout} >
           <Image
-            source={require('../photo/menu.png')}
+            source={require('../photo/logout.png')}
             style={iconStyles.antetIcon}
           />
         </TouchableOpacity>
        </View>
-       <TextInput style={footerStyles.searchBar} placeholder="Search" />
-       {projects.length === 0 && noProjectsMessage ? (
+       <TextInput
+         style={footerStyles.searchBar}
+         placeholder="Search"
+         value={searchTerm}
+         onChangeText={text => setSearchTerm(text)} // Actualizăm termenul de căutare
+       />
+       {filteredProjects.length === 0 && noProjectsMessage ? (
          <View style={proiecteStyles.noProjectsContainer}>
            <Text style={proiecteStyles.noProjectsText}>{noProjectsMessage}</Text>
          </View>
        ) : (
          <FlatList
-           data={projects}
+           data={filteredProjects}
            keyExtractor={(item) => item._id.toString()}
            renderItem={({ item }) => (
              <View>
