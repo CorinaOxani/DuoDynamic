@@ -15,6 +15,7 @@ function LoginScreen(props) {
   const [isOrganization, setIsOrganization] = useState(false);
   const [orgID, setOrgID] = useState('');
   const [userInfo, setUserInfo] = useState(null);  // Stare nouă pentru stocarea informațiilor utilizatorului
+  const [passwordVisible, setPasswordVisible] = useState(false);
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -96,8 +97,15 @@ function LoginScreen(props) {
         onChangeText={setPassword}
         value={password}
         placeholder="Password"
-        secureTextEntry
+        secureTextEntry={!passwordVisible}
       />
+      <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 10 }}>
+        <Text>Unhide Password</Text>
+        <Switch
+          value={passwordVisible}
+          onValueChange={(newValue) => setPasswordVisible(newValue)}
+        />
+      </View>
       <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 10 }}>
         <Text>Are you logging in as an organization?</Text>
         <Switch

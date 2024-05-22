@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Image, TextInput, TouchableOpacity, Text, ActivityIndicator, Alert, StyleSheet, ScrollView } from 'react-native';
+import { View, Image, TextInput, TouchableOpacity, Text, ActivityIndicator, Alert, StyleSheet, ScrollView, Switch } from 'react-native';
 import { styles } from '../styles/button';
 import { logoStyles } from '../styles/logo';
 import { containerStyles } from '../styles/container';
@@ -20,6 +20,7 @@ const RegisterScreen = (props) => {
   const [image,setImage]=useState('')
   const [isLoading, setIsLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
+  const [passwordVisible, setPasswordVisible] = useState(false);
 
   const selectPhoto=()=>{
     ImagePicker.openPicker({
@@ -129,7 +130,20 @@ const RegisterScreen = (props) => {
         <TextInput style={login_page_styles.input} onChangeText={setName} value={name} placeholder="Name" />
         <TextInput style={login_page_styles.input} onChangeText={setEmail} value={email} placeholder="Email" keyboardType="email-address" />
         <TextInput style={login_page_styles.input} onChangeText={setMobile} value={mobile} placeholder="Mobile" keyboardType="numeric" />
-        <TextInput style={login_page_styles.input} onChangeText={setPassword} value={password} placeholder="Password" secureTextEntry />
+        <TextInput
+        style={login_page_styles.input}
+        onChangeText={setPassword}
+        value={password}
+        placeholder="Password"
+        secureTextEntry={!passwordVisible}
+      />
+      <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 10 }}>
+        <Text>Unhide Password</Text>
+        <Switch
+          value={passwordVisible}
+          onValueChange={(newValue) => setPasswordVisible(newValue)}
+        />
+        </View>
         <TextInput style={login_page_styles.input} onChangeText={setCountry} value={country} placeholder="Country" />
         <TextInput style={login_page_styles.input} onChangeText={setCity} value={city} placeholder="City" />
         <TextInput style={login_page_styles.input} onChangeText={setProfileDescription} value={profileDescription} placeholder="Tell us about yourself (min 35 characters)"/>
