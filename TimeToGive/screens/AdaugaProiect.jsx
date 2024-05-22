@@ -60,7 +60,7 @@ import ImagePicker from 'react-native-image-crop-picker';
 //       try {
 //
 //         const response = await axios.get('http://10.0.2.2:5000/current-organization');  console.log("######");
-//         setOrganizationName(response.data.orgName); // Actualizează conform structurii răspunsului tău
+//         setOrganizationName(response.data.name); // Actualizează conform structurii răspunsului tău
 //       } catch (error) {
 //         console.error('Failed to fetch organization details:', error);
 //         Alert.alert("Error", "Failed to load organization data.");
@@ -82,10 +82,10 @@ import ImagePicker from 'react-native-image-crop-picker';
 
         const response = await axios.get(`http://10.0.2.2:5000/current-organization?_id=${oID}`);
         console.log('Organization response:', response.data);
-        if (response.data && response.data.orgName) {
-          setOrganizationName(response.data.orgName);
+        if (response.data && response.data.name) {
+          setOrganizationName(response.data.name);
           setOrganizationVerify(true); // Setează organizationVerify la true
-          console.log('Organization name set:', response.data.orgName);
+          console.log('Organization name set:', response.data.name);
         } else {
           console.log('Organization name not found in response:', response.data);
         }
@@ -130,7 +130,7 @@ const formdata={
   startDate,
   image
 }
-axios.post("http://192.168.1.115:5000/update-project",formdata).then(res=>console.log(res))
+axios.post("http://10.0.2.2:5000/update-project",formdata).then(res=>console.log(res))
 }
 
 //functie care adauga datele in baza de date cand dai submit
@@ -138,7 +138,7 @@ axios.post("http://192.168.1.115:5000/update-project",formdata).then(res=>consol
  const projectData={ projectName:name, spots, description, organizer, email, mobile, organization:organizationName, country, address, startDate, image}  ;
 
  if(nameVerify && spotsVerify && descriptionVerify && organizerVerify && emailVerify && mobileVerify && organizationVerify && countryVerify && addressVerify){
-    axios.post("http://192.168.100.34:5000/addProject", projectData)
+    axios.post("http://10.0.2.2:5000/addProject", projectData)
     .then(res=>{
     console.log(res.data);
         if(res.data.status=='ok')

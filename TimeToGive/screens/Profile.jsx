@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Modal, Text, Image, TextInput, TouchableOpacity, ScrollView, Alert, FlatList } from 'react-native';
+import { View, Text, Image, TextInput, TouchableOpacity, ScrollView, Alert, FlatList } from 'react-native';
 import { iconStyles } from '../styles/icon';
 import { proiecteStyles } from '../styles/proiecte';
 import { footerStyles } from '../styles/footer_header';
@@ -12,8 +12,7 @@ import ImagePicker from 'react-native-image-crop-picker';
 import axios from 'axios';
 
 function ProfileScreen({ route, navigation }) {
-  const userInfo = route.params?.userInfo;
-  const [modalVisible, setModalVisible] = useState(false);
+  const [userInfo, setUserInfo] = useState(route.params?.userInfo);
   const [editedDescription, setEditedDescription] = useState(userInfo.profileDescription || '');
   const [editedImage, setEditedImage] = useState(userInfo.image || '');
   const [isEdited, setIsEdited] = useState(false);
@@ -32,6 +31,22 @@ function ProfileScreen({ route, navigation }) {
       setIsEdited(true);
   };
 
+  const handleLogout = () => {
+    // Clear user information
+    setUserInfo(null);
+    setEditedDescription('');
+    setEditedImage('');
+    setUserProjects([]);
+    setIsEdited(false);
+  
+    // Reset navigation to go back to the Login screen
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'Login' }],
+    });
+  };
+  
+
   const selectPhoto = () => {
       ImagePicker.openPicker({
           width: 400,
@@ -47,6 +62,7 @@ function ProfileScreen({ route, navigation }) {
           Alert.alert("Error Selecting Image", error.message);
       });
   };
+  
 
   const updateUserInfo = () => {
       const updatedUserInfo = {
@@ -86,39 +102,18 @@ function ProfileScreen({ route, navigation }) {
       console.error('Error fetching user projects:', error);
     }
   };
-  const handleLogout = () => {
-    navigation.navigate('Login');
-  };
+  
   if (userInfo.userType === "organization") {
     return (
       <View style={containerStyles.containerPage}>
         <View style={footerStyles.header}>
           <Text style={footerStyles.headerTitle}>Organization's Profile</Text>
-          <TouchableOpacity onPress={() => setModalVisible(true)}>
+          <TouchableOpacity onPress={handleLogout}>
             <Image
               source={require('../photo/logout.png')}
               style={{ width: 50, height: 50 }}
             />
           </TouchableOpacity>
-          <Modal
-            animationType="slide"
-            transparent={true}
-            visible={modalVisible}
-            onRequestClose={() => setModalVisible(!modalVisible)}
-          >
-            <View style={menuStyles.centeredView}>
-              <View style={menuStyles.modalView}>
-                <Text style={menuStyles.menuItem}>Settings</Text>
-                <Text style={menuStyles.menuItem}>Logout</Text>
-                <TouchableOpacity
-                  style={[menuStyles.button, menuStyles.buttonClose]}
-                  onPress={() => setModalVisible(!modalVisible)}
-                >
-                  <Text style={menuStyles.textStyle}>Close Menu</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </Modal>
         </View>
 
         <ScrollView style={proiecteStyles.content}>

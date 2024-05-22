@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const organizationUserSchema = new mongoose.Schema({
-  orgName: String,
+  name: String,
   email: { type: String, unique: true },
   orgID: String, // RO/CUI sau un identificator unic
   password: String,

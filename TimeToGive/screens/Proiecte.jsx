@@ -11,7 +11,7 @@ import axios from 'axios';
 import moment from 'moment';
 
 function ProiecteScreen({ route, navigation }) {
-   const userInfo = route.params?.userInfo;
+  const [userInfo, setUserInfo] = useState(route.params?.userInfo);
    const [projects, setProjects] = useState([]);
    const [refreshProjects, setRefreshProjects] = useState(false);
    const [noProjectsMessage, setNoProjectsMessage] = useState('');
@@ -94,7 +94,14 @@ function ProiecteScreen({ route, navigation }) {
     }
   };
   const handleLogout = () => {
-    navigation.navigate('Login');
+    // Clear user information
+    setUserInfo(null);
+  
+    // Reset navigation to go back to the Login screen
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'Login' }],
+    });
   };
    return (
      <View style={containerStyles.container}>
@@ -144,7 +151,7 @@ function ProiecteScreen({ route, navigation }) {
                <View style={separatorStyles.separator} />
                <View style={proiecteStyles.AvailableContainer}>
                  <Text style={proiecteStyles.text}>Available spots: {item.availableSpots}/{item.spots}</Text>
-                 {userInfo.userType !== 'organization' && ( // Adaugă această verificare
+                 {userInfo && userInfo.userType === 'organization' && ( // Adaugă această verificare
                    <TouchableOpacity onPress={() => applyToProject(item._id)} style={styles.button}>
                      <Text style={proiecteStyles.applayText}>APPLY</Text>
                    </TouchableOpacity>

@@ -9,7 +9,7 @@ import { containerStyles } from '../styles/container';
 import axios from 'axios';
 
 function OrganizationsScreen({ route, navigation }) {
-  const userInfo = route.params?.userInfo;
+  const [userInfo, setUserInfo] = useState(route.params?.userInfo);
   const [allUsers, setAllUsers] = useState([]);
   const [allProjects, setAllProjects] = useState({});
   const [noUsersMessage, setNoUsersMessage] = useState('');
@@ -50,7 +50,14 @@ function OrganizationsScreen({ route, navigation }) {
     }
   };
   const handleLogout = () => {
-    navigation.navigate('Login');
+    // Clear user information
+    setUserInfo(null);
+  
+    // Reset navigation to go back to the Login screen
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'Login' }],
+    });
   };
 
   const fetchProjectsForUsers = async (users) => {
