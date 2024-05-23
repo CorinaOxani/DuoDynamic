@@ -164,7 +164,7 @@ function ProfileScreen({ route, navigation }) {
               style={proiecteStyles.image}
             />
           </TouchableOpacity>
-
+          <Text style={{ color: '#888', fontSize: 12, marginTop: 4 }}>Tap above to edit your photo.</Text>
           <View style={separatorStyles.separator} />
           <View>
             <Text style={proiecteStyles.text}>Organization : {userInfo.name || 'No name provided'}</Text>
@@ -180,14 +180,13 @@ function ProfileScreen({ route, navigation }) {
               multiline={true}
             />
           </View>
-
+          <Text style={{ color: '#888', fontSize: 12, marginTop: 4 }}>Tap above to edit your description.</Text>
           <View style={separatorStyles.separator} />
 
           <View style={proiecteStyles.infoContainer}>
             <Text style={proiecteStyles.text}>Contact Us:</Text>
             <Text style={proiecteStyles.infoText}>Email: {userInfo.email || 'No email provided'}</Text>
             <Text style={proiecteStyles.infoText}>Call Center: {userInfo.mobile || 'No Phone number provided'}</Text>
-
             {isEdited && (
               <TouchableOpacity style={styles.button} onPress={updateUserInfo}>
                 <Text style={styles.buttonText}>Save your changes!</Text>
@@ -287,6 +286,7 @@ function ProfileScreen({ route, navigation }) {
             value={editedDescription}
             multiline={true}
           />
+          <Text style={{ color: '#888', fontSize: 12, marginTop: 4 }}>Tap above to edit your description.</Text>
           {isEdited && (
             <TouchableOpacity style={styles.button} onPress={updateUserInfo}>
               <Text style={styles.buttonText}>Save</Text>
