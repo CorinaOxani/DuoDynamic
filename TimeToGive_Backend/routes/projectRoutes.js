@@ -68,6 +68,16 @@ router.post('/apply/:projectId', async (req, res) => {
   }
 });
 
+router.post('/getProjectsByIds', async (req, res) => {
+  const { ids } = req.body;
+  try {
+    const projects = await Project.find({ _id: { $in: ids } });
+    res.status(200).send({ projects });
+  } catch (error) {
+    console.error('Error fetching projects:', error.message);
+    res.status(500).send({ message: 'Error fetching projects', error: error.message });
+  }
+});
 
 
 router.post('/update-project', async(req, res)=>{
