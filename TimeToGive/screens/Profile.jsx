@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, TextInput, TouchableOpacity, ScrollView, Alert, FlatList } from 'react-native';
+import { View, Text, Modal, Image,Button, TextInput, TouchableOpacity, ScrollView, Alert, FlatList } from 'react-native';
 import { iconStyles } from '../styles/icon';
 import { proiecteStyles } from '../styles/proiecte';
 import { footerStyles } from '../styles/footer_header';
 import { separatorStyles } from '../styles/separator';
 import { containerStyles } from '../styles/container';
 import { userProfileStyles } from '../styles/userProfile';
-import { menuStyles } from '../styles/menu';
+import modalStyles from '../styles/modalStyles';
 import { styles } from '../styles/button';
 import ImagePicker from 'react-native-image-crop-picker';
 import axios from 'axios';
@@ -17,14 +17,21 @@ function ProfileScreen({ route, navigation }) {
   const [editedImage, setEditedImage] = useState(userInfo.image || '');
   const [isEdited, setIsEdited] = useState(false);
   const [userProjects, setUserProjects] = useState([]);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [newPassword, setNewPassword] = useState('');
+
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
-      fetchUserProjects();
+      // Only fetch projects if the user is an organization
+      if (userInfo.userType === "individual") {
+        fetchUserProjects();
+      }
     });
 
     return unsubscribe;
-  }, [navigation]);
+    }, [navigation, userInfo.userType]); // Also depend on userInfo.userType to re-run when it changes
+
 
   const handleDescriptionChange = (text) => {
       setEditedDescription(text);
@@ -62,8 +69,42 @@ function ProfileScreen({ route, navigation }) {
           Alert.alert("Error Selecting Image", error.message);
       });
   };
-  
 
+  const updatePassword = () => {
+    if (!newPassword || newPassword.length < 6) {
+        Alert.alert("Error", "Password must be at least 6 characters long.");
+        return;
+    }
+
+    const updatedUserInfo = {
+        ...userInfo,
+        password: newPassword,  // Assuming your backend can handle password updates this way
+    };
+
+    fetch(`http://10.0.2.2:5000/update-user/${userInfo.email}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedUserInfo),
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        setModalVisible(false);
+        setNewPassword(''); // Clear the password field after update
+        Alert.alert("Success", "Password updated successfully.");
+    })
+    .catch(error => {
+        Alert.alert("Update Failed", error.toString());
+    });
+};
+
+  
   const updateUserInfo = () => {
       const updatedUserInfo = {
           ...userInfo,
@@ -126,7 +167,7 @@ function ProfileScreen({ route, navigation }) {
 
           <View style={separatorStyles.separator} />
           <View>
-            <Text style={proiecteStyles.text}>Organization Name: {userInfo.name || 'No name provided'}</Text>
+            <Text style={proiecteStyles.text}>Organization : {userInfo.name || 'No name provided'}</Text>
           </View>
 
           <View style={separatorStyles.separator} />
@@ -186,6 +227,38 @@ function ProfileScreen({ route, navigation }) {
 
   return (
     <View style={containerStyles.containerPage}>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(!modalVisible);
+          setNewPassword(''); // Reset the password on modal close
+        }}
+      >
+      <View style={modalStyles.centeredView}>
+        <View style={modalStyles.modalView}>
+          <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 10 }}>Enter your new password:</Text>
+          <TextInput
+            secureTextEntry={true}
+            style={modalStyles.input}
+            onChangeText={setNewPassword}
+            value={newPassword}
+            placeholder="New Password"
+          />
+          <TouchableOpacity style={[modalStyles.button, { backgroundColor: '#3A6238' }]} onPress={updatePassword}>
+            <Text style={modalStyles.buttonText}>Submit</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={[modalStyles.button, { backgroundColor: '#3A6238' }]} onPress={() => {
+            setModalVisible(!modalVisible);
+            setNewPassword('');
+          }}>
+            <Text style={modalStyles.buttonText}>Cancel</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </Modal>
+
       <View style={footerStyles.header}>
         <Text style={footerStyles.headerTitle}>Profile</Text>
         <TouchableOpacity onPress={handleLogout}>
@@ -230,12 +303,16 @@ function ProfileScreen({ route, navigation }) {
           <Text style={proiecteStyles.infoText}>Phone: {userInfo.mobile || 'No Phone number provided'}</Text>
           <Text style={proiecteStyles.infoText}>Country: {userInfo.country || 'No Country provided'}</Text>
           <Text style={proiecteStyles.infoText}>City: {userInfo.city || 'No City provided'}</Text>
+          <TouchableOpacity style={styles.button} onPress={() => setModalVisible(true)}>
+            <Text style={styles.buttonText}>Change Password</Text>
+          </TouchableOpacity>
+
         </View>
 
         <View style={separatorStyles.separator} />
 
         <View style={proiecteStyles.infoContainer}>
-          <Text style={proiecteStyles.text}>Projects:</Text>
+          <Text style={proiecteStyles.text}>My Projects :</Text>
           {userProjects.map(project => (
             <TouchableOpacity key={project._id} onPress={() => navigation.navigate("Proiecte", { projectId: project._id, userInfo })}>
               <Text style={proiecteStyles.infoText}>{project.projectName}</Text>

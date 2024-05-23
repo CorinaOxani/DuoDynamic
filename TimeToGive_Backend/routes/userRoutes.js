@@ -46,7 +46,7 @@ router.post("/login-user", async (req, res) => {
       _id: user._id,
       userType: orgID ? "organization" : "individual",
       email: user.email,
-      name: orgID ? user.orgName : user.name,
+      name: user.name,
       mobile: user.mobile,
       country: user.country,
       city: user.city,
@@ -168,5 +168,48 @@ router.post("/getProjectsForUsers", async (req, res) => {
     res.status(500).send({ message: "Error fetching projects for users", error: error.message });
   }
 });
+
+router.patch("/update-password/:userEmail", async (req, res) => {
+  const { userEmail } = req.params;
+  const { newPassword } = req.body;
+
+  if (!newPassword || newPassword.length < 6) {
+    console.log("Failed password validation:", newPassword);
+    return res.status(400).send({ message: "Password must be at least 6 characters long." });
+  }
+
+  try {
+    // Try to update a regular user first
+    let user = await User.findOneAndUpdate(
+      { email: userEmail },
+      { $set: { password: newPassword }},
+      { new: true }
+    );
+
+    // If no regular user is found, try to update an organization user
+    if (!user) {
+      console.log("No regular user found, trying organization user for:", userEmail);
+      user = await OrganizationUser.findOneAndUpdate(
+        { email: userEmail },
+        { $set: { password: newPassword }},
+        { new: true }
+      );
+    }
+
+    // Check if no user was updated in either case
+    if (!user) {
+      console.log("No user found for password update:", userEmail);
+      return res.status(404).send({ message: "User not found" });
+    }
+
+    console.log("Password updated successfully for user:", userEmail);
+    res.send({ message: "Password updated successfully" });
+  } catch (error) {
+    console.error("Error updating password for:", userEmail, "Error:", error);
+    res.status(500).send({ message: "Error updating password", error: error.message });
+  }
+});
+
+
 
 module.exports = router;
